@@ -1,0 +1,13 @@
+{
+    "name": "lab02",
+    "version": "1.0.0",
+    "description": "Lab Number 2",
+    "authors": [
+        "Your Name"
+    ],
+    "sourceDir": "src",
+    "mainScripts": [
+        "main.vss"
+    ],
+    "libsDir": "libs"
+}

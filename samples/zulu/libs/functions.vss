@@ -1,0 +1,156 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+UseVSE "*ZuluVSE"
+
+%REM
+    Parses an ISO string ending "Z"
+%END REM
+Function parseISOZuluDateString() as DateTimeObject
+    Dim dateStr as String
+    Dim parser as new DateTimeParser()
+    Dim dateObj as DateTimeObject
+
+    dateStr = "2023-08-15T09:50:20Z"
+    Set dateObj = parser.parseISOString(dateStr)
+    Return dateObj
+End Function
+
+%REM
+    Parses an ISO string with offset
+%END REM
+Function parseISOOffsetDateString() as DateTimeObject
+    Dim dateStr as String
+    Dim parser as new DateTimeParser()
+    Dim dateObj as DateTimeObject
+
+    dateStr = "2023-08-15T02:50:20-07:00"
+    Set dateObj = parser.parseISOString(dateStr)
+    Print dateObj.defaultFormat
+    Return dateObj
+End Function
+
+%REM
+    Parses a date in epoch seconds from Jan 1 1970
+%END REM
+Function parseDateEpoch()
+    Dim parser as new DateTimeParser()
+    Dim dateObj as DateTimeObject
+
+    Set dateObj = parser.BuildDateTimeFromEpoch(1692101300)
+    Print dateObj.defaultFormat
+    Return dateObj
+End Function
+
+%REM
+    Parses a date from constituent parts
+%END REM
+Function parseDateParts()
+    Dim parser as new DateTimeParser()
+    Dim dateObj as DateTimeObject
+
+    Set dateObj = parser.BuildDateTimeObject(2023,8,4,11,20,25,-60)
+    Print dateObj.defaultFormat
+    Return dateObj
+End Function
+
+%REM
+    Parses a date from constituent parts
+%END REM
+Function parseDateFormat(simple as Boolean)
+    Dim dateStr as String
+    Dim dateFmt as String
+    Dim parser as new DateTimeParser()
+    Dim dateObj as DateTimeObject
+
+    dateStr = "2023-08-15 02:50:20"
+    If (simple) Then
+        dateFmt = "%F %T"
+    Else
+        dateFmt = "%Y-%m-%d %H:%M:%S"
+    End If
+    Set dateObj = parser.parseDateString(dateStr, dateFmt)
+    Return dateObj
+End Function
+
+%REM
+    Parses a date using various formats
+%END REM 
+Sub toStringFormatExample()
+    Dim dtObj as DateTimeObject, dtParser as New DateTimeParser
+    Dim testISOStr as String, testFmtPattern1 as String, testFmtPattern2 as string, testFmtPattern3 as String
+    testISOStr = "2023-02-20T20:49:13Z"
+    testFmtPattern1 = "%Y-%m-%d %H:%M:%S %Z"
+    testFmtPattern2 = "%F %T %Z"
+    testFmtPattern3 = "%A, %B %d %Y %T %Z"
+ 
+    Set dtObj = dtParser.ParseISOString(testISOStr)
+
+    Print |Using test ISO String "| & testISOStr & |" with no locale code; |
+    Print |Format pattern "| & testFmtPattern1 & |" returns "| & dtObj.toString(testFmtPattern1, "") & |",|
+    Print |Format pattern "| & testFmtPattern2 & |" returns "| & dtObj.toString(testFmtPattern2, "") & |",|
+    Print |Format pattern "| & testFmtPattern3 & |" returns "| & dtObj.toString(testFmtPattern3, "") & |"|
+End Sub
+
+
+%REM
+    Parses a date using various formats and a locale 
+%END REM
+Function toStringFormatTypeLocale(formatType as Integer, locale as String) as String
+    Dim dtObj as DateTimeObject, dtParser as New DateTimeParser
+    Dim testISOStr as String, testFmtPattern1 as String, testFmtPattern2 as string, testFmtPattern3 as String
+    %REM
+        %B == full month name
+        %b == abbreviated month name
+
+        %A == full day name
+        %a == abbreviated day name
+
+        %m == month
+
+        %d == day of month
+        %0d == day of month (2 digit)
+
+        %Y == year as four digits
+
+        %F == equivalent of %Y-%m-%d
+
+        %H == hour
+        %M == minute
+        %S == second
+        %T == equivalent of %H:%M:%S
+
+        %Z == locale-dependent time zone name or abbrev
+    %END REM
+    testISOStr = "2023-02-20T20:49:13Z"
+    testFmtPattern1 = "%Y-%m-%d %H:%M:%S %Z"
+    testFmtPattern2 = "%F %T %Z"
+    testFmtPattern3 = "%A, %B %d %Y %T %Z"
+ 
+    Set dtObj = dtParser.ParseISOString(testISOStr)
+
+    Select Case formatType
+        Case 1:
+            Return dtObj.toString(testFmtPattern1, locale)
+        Case 2:
+            Return dtObj.toString(testFmtPattern2, locale)
+        Case 3:
+            Return dtObj.toString(testFmtPattern3, locale)
+        Case Else
+            Error 1001, "Unexpected formatType request, pass 1, 2, or 3"
+    End Select
+End Function

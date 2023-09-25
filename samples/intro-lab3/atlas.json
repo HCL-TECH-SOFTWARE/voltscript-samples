@@ -1,0 +1,50 @@
+{
+    "name": "lab07",
+    "version": "1.0.0",
+    "description": "Lab Number 7",
+    "authors": [
+        "Your Name"
+    ],
+    "sourceDir": "src",
+    "testDir": "test",
+    "mainScripts": [
+        "main.vss"
+    ],
+    "displayName": "My Way Cool Project",
+    "libsDir": "libs",
+    "vsesDir": "vses",
+    "repositories": [
+        {
+            "id": "volt-mx-marketplace",
+            "type": "marketplace",
+            "url": "https://community.demo-hclvoltmx.com/marketplace/asset"
+        },
+        {
+            "id": "hcl-github",
+            "type": "github",
+            "url": "https://api.github.com/repos/HCL-TECH-SOFTWARE"
+        }
+    ],
+    "dependencies": [
+        {
+            "library": "voltscript-testing",
+            "version": "1.0.0",
+            "module": "VoltScriptTesting.vss",
+            "repository": "hcl-github"
+        },
+        {
+            "library": "voltscript-json-converter",
+            "version": "1.0.0",
+            "module": "VoltScriptJsonConverter.vss",
+            "repository": "hcl-github"
+        }
+    ],
+    "vseDependencies": {
+        "StreamVSE": {
+            "library": "25284",
+            "version": "1.0.0",
+            "module": "25283/19424",
+            "repository": "volt-mx-marketplace"
+        }
+    }
+}

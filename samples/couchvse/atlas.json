@@ -1,0 +1,33 @@
+{
+    "name": "couch-samples",
+    "description": "HCL VoltScript CouchDB Samples",
+    "license": "Apache 2.0",
+    "authors": [
+        "Paul Withers", 
+        "Devin S. Olson"
+    ],
+    "version":"1.0.0",
+    "mainScripts": [
+        "main.vss"
+    ],
+    "sourceDir": "src",
+    "testDir": "test",
+    "vsesDir": "vses",
+    "libsDir": "libs",
+    "repositories": [
+        {
+            "id": "volt-mx-marketplace",
+            "type": "marketplace",
+            "url": "https://community.demo-hclvoltmx.com/marketplace/asset"
+        }
+    ],
+    "dependencies": [
+    ],
+    "vseDependencies": {
+        "CouchVSE": {
+            "library": "25292",
+            "version": "1.0.0",
+            "module": "25291/19425"   
+        }
+    }
+}

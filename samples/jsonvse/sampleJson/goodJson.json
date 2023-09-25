@@ -1,0 +1,24 @@
+{
+    "firstName": "John",
+    "lastName": "Doe",
+    "age": 42,
+    "children": [
+        {
+            "firstName": "Jane",
+            "age": 12
+        },
+        {
+            "firstName": "Fred",
+            "age": 10
+        }
+    ],
+    "living": true,
+    "address": {
+        "add1": "10 Main Street",
+        "add2": "",
+        "town": "London",
+        "county": "",
+        "postcode": "NE1 1TT",
+        "country": "United Kingdom"
+    }
+}

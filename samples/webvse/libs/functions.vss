@@ -1,0 +1,198 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+UseVSE "*WebVSE"
+UseVSE "*JsonVSE"
+
+Private server as WebServer
+Private dominoServer as WebServer
+
+%REM
+    Create or retrievve the private server as a WebServer object for httpstat.us
+%END REM
+Function getWebServer() as WebServer
+    If (server is Nothing) Then
+        Set server = new WebServer()
+        server.protocol = "HTTPS"
+        server.HostUrl = "httpstat.us"
+    End If
+    Return server
+End Function
+
+%REM
+    Makes a GET request for a text return value
+    DO NOT USE IN UNIT TESTS - UNIT TESTS SHOULD NOT REQUIRE EXTERNAL SERVICES
+%END REM
+Function makeBasicRequest() as WebResponse
+    Dim request as WebRequest
+
+    Set request = getWebServer().createRequest()
+    request.target = "200"
+    request.timeoutSeconds = 5
+    Return request.send()
+End Function
+
+
+%REM
+    Makes a POST request, sending JSON with custom header, returning JSON
+    DO NOT USE IN UNIT TESTS - UNIT TESTS SHOULD NOT REQUIRE EXTERNAL SERVICES
+%END REM
+Function makeJsonRequest() as WebResponse
+    Dim request as WebRequest
+
+    Set request = getWebServer().createRequest()
+    request.Verb = "PUT"
+    request.ContentType = "application/json"
+    request.AcceptHeader = "application/json"
+    Call request.addHeader("X-HttpStatus-Response-Foo", "Bar")
+    request.target = 418
+    request.timeoutSeconds = 5
+    request.RequestBody = |{"hello":"world"}|
+    Return request.send()
+End Function
+
+%REM
+    Makes a GET request using a URL Builder
+    DO NOT USE IN UNIT TESTS - UNIT TESTS SHOULD NOT REQUIRE EXTERNAL SERVICES
+%END REM
+Function makeRequestFromUrlBuilder(server as WebServer) as WebResponse
+    Dim request as WebRequest
+    Dim builder as New UrlBuilder()
+
+    builder.isHttps = True
+    builder.targetHost = "httpstat.us"
+    builder.targetPath = "200"
+    Call builder.addUrlParameter("sleep", "1000")
+    Set request = server.createRequestWithUrl(builder.toString(False))
+    request.timeoutSeconds = 5
+    Return request.send()
+End Function
+
+%REM
+    Validates a response code from basic request
+    DO NOT USE IN UNIT TESTS - UNIT TESTS SHOULD NOT REQUIRE EXTERNAL SERVICES
+%END REM
+Function validateResponseCode(responseCode as Integer) as Boolean
+    Dim request as WebRequest
+    Dim response as WebResponse
+
+    Set request = getWebServer().createRequest()
+    request.target = "418"
+    Set response = request.send()
+    Return response.responseCode = 200
+End Function
+
+%REM
+    Parses a JSON response, assumed to be ContentBody from a WebResponse
+%END REM
+Function parseResponse(json as String) as JsonObject
+    Dim parser as New JsonParser()
+    Dim obj as JsonObject
+
+    Call parser.loadFromJSON(json)
+    Return parser.getRootObject
+End Function
+
+%REM
+    Creates a WebServer object pointing to a Domino Server
+    NOTE: MUST BE UPDATED TO WORK
+%END REM
+Function getDominoWebServer() as WebServer
+    If (dominoServer is Nothing) Then
+        Set dominoServer = new WebServer()
+        dominoServer.protocol = "HTTPS" ' or omit if HTTP
+        dominoServer.HostUrl = ""   ' Put Domino server here, without protocol
+    End If
+    Return dominoServer
+End Function
+
+%REM
+    Downloads a file that is a view icon on a Domino server
+%END REM
+Sub downloadViewIcon()
+
+    Dim request as WebRequest
+    Dim response as WebResponse
+    Dim path as String
+
+    Try
+        ' Update Domino server details in `getDominoWebServer()`
+        Set request = getDominoWebServer().createRequest()
+        request.target = "icons/vwicn001.gif"
+        request.timeoutSeconds = 10
+        path = CurDir & "/unit-test-reports/vwicon1.gif"
+        Set response = request.fileDownload(path)
+        If response.responseCode = 200 Then
+            Print "Successful download, check " & path
+        Else
+            Print "Download failed, " & response.responseCode
+        End If
+    Catch
+        Print "Error " & Error() & " on line " & Erl()
+    End Try
+
+End Sub
+
+%REM
+    Downloads simultaneously three files that are view icons on a Domino server
+%END REM
+Sub downloadViewIconsAsync()
+
+    Dim request as WebRequest
+    Dim arr(2) as Completion
+    Dim response as WebResponse
+    Dim path as String
+
+    Try
+        ' Update Domino server details in `getDominoWebServer()`
+        Set request = getDominoWebServer().createRequest()
+        request.timeoutSeconds = 10
+        request.target = "icons/vwicn001.gif"
+        path = CurDir & "/unit-test-reports/vwicon-async1.gif"
+        Set arr(0) = request.fileDownloadNoWait(path)
+
+        Set request = getDominoWebServer().createRequest()
+        request.timeoutSeconds = 10
+        request.target = "icons/vwicn002.gif"
+        path = CurDir & "/unit-test-reports/vwiconasync2.gif"
+        Set arr(1) = request.fileDownloadNoWait(path)
+
+        Set request = getDominoWebServer().createRequest()
+        request.timeoutSeconds = 10
+        request.target = "icons/vwicn003.gif"
+        path = CurDir & "/unit-test-reports/vwiconasync3.gif"
+        Set arr(2) = request.fileDownloadNoWait(path)
+
+        Call arr(0).wait()
+        Call arr(1).wait()
+        Call arr(2).wait()
+
+        Dim i as Integer
+        For i = 0 To UBound(arr)
+            Print "Completion code is " & arr(i).CompletionCode
+            Set response = arr(i).response
+            Print "Response code is " & response.responseCode
+        Next
+
+        If response.responseCode = 200 Then
+            Print "Successful download, check " & path
+        End If
+    Catch
+        Print "Error " & Error() & " on line " & Erl()
+    End Try
+
+End Sub

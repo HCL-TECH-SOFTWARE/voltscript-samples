@@ -1,0 +1,58 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+Const jsonStr = |{
+    "name": "web-samples",
+    "authors": [
+        "Paul Withers"
+    ],
+    "description": "HCL VoltScript Web Samples",
+    "license": "Apache 2.0",
+    "version": "1.0.0",
+    "sourceDir": "src",
+    "libsDir": "libs",
+    "vsesDir": "vses",
+    "testDir": "test",
+    "mainScripts": [
+        "main.vss"
+    ],
+    "dependencies": [
+        {
+            "library": "voltscript-testing",
+            "version": "1.1.0",
+            "module": "VoltScriptTesting.vss"
+        }
+    ],
+    "vseDependencies": {
+        "HashVSE": {
+            "library": "HashVSE",
+            "version": "1.0.0",
+            "module": "hashvse"
+        }
+    },
+    "repositories": [
+        {
+            "id": "domino",
+            "type": "webserver",
+            "url": "https://domino.sage.fnxlabs.com/VoltScriptRepository.nsf"
+        }
+    ]
+}|
+
+Const base64Str = |ewogICAgIm5hbWUiOiAid2ViLXNhbXBsZXMiLAogICAgImF1dGhvcnMiOiBbCiAgICAgICAgIlBhdWwgV2l0aGVycyIKICAgIF0sCiAgICAiZGVzY3JpcHRpb24iOiAiSENMIFZvbHRTY3JpcHQgV2ViIFNhbXBsZXMiLAogICAgImxpY2Vuc2UiOiAiQXBhY2hlIDIuMCIsCiAgICAidmVyc2lvbiI6ICIxLjAuMCIsCiAgICAic291cmNlRGlyIjogInNyYyIsCiAgICAibGlic0RpciI6ICJsaWJzIiwKICAgICJ2c2VzRGlyIjogInZzZXMiLAogICAgInRlc3REaXIiOiAidGVzdCIsCiAgICAibWFpblNjcmlwdHMiOiBbCiAgICAgICAgIm1haW4udnNzIgogICAgXSwKICAgICJkZXBlbmRlbmNpZXMiOiBbCiAgICAgICAgewogICAgICAgICAgICAibGlicmFyeSI6ICJ2b2x0c2NyaXB0LXRlc3RpbmciLAogICAgICAgICAgICAidmVyc2lvbiI6ICIxLjEuMCIsCiAgICAgICAgICAgICJtb2R1bGUiOiAiVm9sdFNjcmlwdFRlc3RpbmcudnNzIgogICAgICAgIH0KICAgIF0sCiAgICAidnNlRGVwZW5kZW5jaWVzIjogewogICAgICAgICJIYXNoVlNFIjogewogICAgICAgICAgICAibGlicmFyeSI6ICJIYXNoVlNFIiwKICAgICAgICAgICAgInZlcnNpb24iOiAiMS4wLjAiLAogICAgICAgICAgICAibW9kdWxlIjogImhhc2h2c2UiCiAgICAgICAgfQogICAgfSwKICAgICJyZXBvc2l0b3JpZXMiOiBbCiAgICAgICAgewogICAgICAgICAgICAiaWQiOiAiZG9taW5vIiwKICAgICAgICAgICAgInR5cGUiOiAid2Vic2VydmVyIiwKICAgICAgICAgICAgInVybCI6ICJodHRwczovL2RvbWluby5zYWdlLmZueGxhYnMuY29tL1ZvbHRTY3JpcHRSZXBvc2l0b3J5Lm5zZiIKICAgICAgICB9CiAgICBdCn0=|
+
+Const hashStartStr = |Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nisl risus, rutrum feugiat imperdiet at, varius finibus urna.|

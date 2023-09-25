@@ -1,0 +1,35 @@
+Option Public
+Option Declare
+
+Use "../libs/functions"
+
+Sub Initialize
+
+	Dim server As CouchServer
+    Dim db as CouchDatabase
+    Dim loginResult as Boolean
+    Dim doc as CouchDocument
+    Dim attach as CouchAttachment
+    Dim fileName as String
+
+	loginResult = loginCouchDbServer(server, USERNAME, PASSWORD, SERVER_URL, "")
+	If Not loginResult Then Return
+
+	Set db = getOrCreateCouchDbDatabase(server, "demo")
+    Set doc = db.createDocument("", |{"firstName":"John","lastName":"Doe","email":"jdoe@acme.com"}|)
+    Call doc.save()
+    
+    fileName = "createDocumentAndAttachmentPlusDownload.vss"
+    Set attach = doc.createAttachment(fileName,_ 
+        CurDir & "/src/" & fileName, "text/plain")
+    Call attach.upload
+
+    ' Need to re-acquire document to update CouchDocument fields
+    Set doc = db.GetDocumentByID(doc.ID, False)
+
+    Set attach = doc.getAttachmentInfo(fileName)
+    Call attach.download(CurDir & "/temp.txt", True)
+    
+    Call PrintCouchDocumentInfo(doc)
+
+End Sub

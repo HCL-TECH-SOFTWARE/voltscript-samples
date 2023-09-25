@@ -1,0 +1,12 @@
+{
+    "hcl-github": {
+        "type": "github",
+        "token": "YOUR_GITHUB_TOKEN"
+    },
+    "volt-mx-marketplace": {
+        "type": "marketplace",
+        "username": "YOUR_USERNAME",
+        "password": "YOUR_PASSWORD",
+        "authUrl": "https://accounts.auth.demo-hclvoltmx.net/login"
+    }
+}

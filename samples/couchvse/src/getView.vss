@@ -1,0 +1,27 @@
+Option Public
+Option Declare
+
+Use "../libs/functions"
+
+%REM
+    Assumes a view with the ID "names", wth mapFunction
+function (doc) {
+  emit(doc._id, {"firstName": doc.firstName, "lastName": doc.lastName});
+}
+%END REM
+
+Sub Initialize
+
+	Dim server As CouchServer
+    Dim db as CouchDatabase
+    Dim loginResult as Boolean
+    Dim view as CouchView
+
+	loginResult = loginCouchDbServer(server, USERNAME, PASSWORD, SERVER_URL, "")
+	If Not loginResult Then Return
+
+	Set db = getOrCreateCouchDbDatabase(server, "demo")
+    Set view = db.getViewByID("names")
+    Print view.getSomeRows(0, 2)
+
+End Sub

@@ -1,0 +1,8 @@
+libs/VoltScriptTesting.vss
+vses/*
+unit-test-reports/*
+seti.ini 
+libcurl.log 
+cookiefile.txt
+core
+temp.txt

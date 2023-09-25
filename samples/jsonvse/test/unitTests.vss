@@ -1,0 +1,75 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+Use "../libs/VoltScriptTesting"
+Use "../libs/functions"
+
+Sub Initialize
+
+    Dim testRunner as New TestRunner("JSON VSE")
+    Dim testSuite as New TestSuite("Test JSON Building")
+    Dim jsonObj as JsonObject
+    Dim jsonArr as JsonObject
+
+    Call testRunner.addTestSuite(testSuite)
+    Set jsonObj = buildJsonObj()
+    Call testSuite.describe("Test JSON object has two children").assertEqualsInteger(2, jsonObj.childCount)
+    Call testSuite.describe("Test children are re-ordered alphabetically").assertEqualsString("Number", jsonObj.getChildren()(0).Label, False)
+    Call testSuite.describe("Test 'Number' is a a long").assertIs("LONG", jsonObj.getChild("Number").scalarValue)
+    Call testSuite.describe("Test 'String' is a string").assertIs("STRING", jsonObj.getChild("String").scalarValue)
+
+    Set jsonArr = buildJsonArr()
+    Call testSuite.describe("Test array has three children").assertEqualsInteger(3, jsonArr.childCount)
+    Call testSuite.describe("Test first child is 'One'").assertEqualsPrimitive("One", jsonArr.getChildren()(0).scalarValue)
+    Call testSuite.describe("Test first child is 'Two'").assertEqualsPrimitive("Two", jsonArr.getChildren()(1).scalarValue)
+    Call testSuite.describe("Test first child is 2").assertEqualsPrimitive(2, jsonArr.getChildren()(2).scalarValue)
+
+    Call addVSArrToObj(jsonObj)
+    Call testSuite.describe("Test array is added").assertTrue(jsonObj.isChild("StringArray"))
+    Call testSuite.describe("Test array has two elements").assertEqualsInteger(2, jsonObj.getChild("StringArray").childCount)
+    Call testSuite.describe("Test array values").assertEqualsString("HelloWorld",_
+        CStr(jsonObj.getChild("StringArray").getChildren()(0).scalarValue) &_ 
+        CStr(jsonObj.getChild("StringArray").getChildren()(1).scalarValue), True)
+    
+    Set jsonObj = new JsonObject
+    Call addJsonArrToObject(jsonObj, jsonArr)
+    Print jsonObj.toString(true)
+    Call testSuite.describe("Test array was added three times").assertEqualsInteger(3, jsonObj.childCount)
+    Call testSuite.describe("Test JSONArray was added").assertTrue(jsonObj.isChild("JSONArray"))
+    Call testSuite.describe("Test ObjectArray was added").assertTrue(jsonObj.isChild("ObjectArray"))
+    Call testSuite.describe("Test ArrayLabel was added").assertTrue(jsonObj.isChild("ArrayLabel"))
+    Call testSuite.describe("Test child 0 and child 1 match").assertEqualsString(jsonObj.getChildren()(0).toString(false),_
+        jsonObj.getChildren()(1).toString(false), true)
+    Call testSuite.describe("Test child 1 and child 2 match").assertEqualsString(jsonObj.getChildren()(1).toString(false),_
+        jsonObj.getChildren()(2).toString(false), true)
+
+    Set jsonObj = New JsonObject()
+    Call addJsonObj(jsonObj)
+    Call testSuite.describe("Check jsonObj has 3 children").assertEqualsInteger(3, jsonObj.childCount)
+    Call testSuite.describe("Test child1 was added").assertTrue(jsonObj.isChild("child1"))
+    Call testSuite.describe("Test child2 was added").assertTrue(jsonObj.isChild("child2"))
+    Call testSuite.describe("Test child3 was added").assertTrue(jsonObj.isChild("child3"))
+    Call testSuite.describe("Test child 0 and child 1 match").assertEqualsString(jsonObj.getChildren()(0).toString(false),_
+        jsonObj.getChildren()(1).toString(false), true)
+    Call testSuite.describe("Test child 1 and child 2 match").assertEqualsString(jsonObj.getChildren()(1).toString(false),_
+        jsonObj.getChildren()(2).toString(false), true)
+
+    Set jsonObj = modifyChild()
+    Call testSuite.describe("Test jsonObj has elem1").assertTrue(jsonObj.isChild("elem1"))
+    Call testSuite.describe("Test jsonObj does not have elem2").assertFalse(jsonObj.isChild("elem2"))
+
+End Sub

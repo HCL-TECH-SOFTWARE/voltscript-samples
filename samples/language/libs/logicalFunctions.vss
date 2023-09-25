@@ -1,0 +1,67 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+%REM
+    Class used for following functions
+%END REM
+Class Student
+    Public ID As Long
+    Public Name As String
+    Public Score As String
+End Class
+
+%REM
+    Demonstrates how traditional "Or" fails with Object Variable Not Set
+%END REM
+Sub orFail()
+    Dim obj as Student
+    If (obj is Nothing Or obj.Name != "") Then
+        Print "Student not initialized"
+    End If
+End Sub
+
+%REM
+    Short-circuits logical expressions, skipping through 
+%END REM
+Function orSuccess as String
+    Dim obj as Student
+    If (obj is Nothing || obj.Name != "") Then
+        Print "Student not initialized"
+    End If
+    Return "Success"
+End Function
+
+%REM
+    Demonstrates how traditional "And" fails with Type Mismatch
+%END REM
+Sub andFail()
+    Dim obj as New Student
+    If (obj.Name != "" And obj.Score > 90) Then
+        Print "High-score valid student"
+    End If
+End Sub
+
+%REM
+    Short-circuits logical expressions, skipping through 
+%END REM
+Function andSuccess as String
+    Dim obj as New Student
+    If (obj.Name != "" && obj.Score > 90) Then
+        Print "High-score valid student"
+    End If
+    Return "Success"
+End Function

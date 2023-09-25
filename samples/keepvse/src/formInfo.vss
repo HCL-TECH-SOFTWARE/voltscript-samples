@@ -1,0 +1,55 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+Use "../libs/functions"
+
+Sub Initialize
+    Dim server as New KeepServer
+    Dim scope as KeepScope
+    Dim categories as String
+    Dim parser as New JsonParser()
+    Dim jsonObj as JsonObject
+
+    Try
+        server.serverURL = SERVER_NAME
+        Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
+        Set scope = server.getScope("demo")
+        Call parser.loadFromJson(scope.getFormInfo("Customer"))
+        Set jsonObj = parser.getRootObject()
+        If (Not jsonObj.isChild("formModes")) Then
+            Print parser.toString(True) 'Error occurred
+        Else
+            ForAll mode in jsonObj.getChild("formModes").getChildren()
+                If ("default" = CStr(mode.getChild("modeName").scalarValue)) Then
+                    ForAll field in mode.getChild("fields").getChildren()
+                        Print "FIELD " & CStr(field.getChild("externalName").scalarValue)
+                        Print "    type: " & CStr(field.getChild("type").scalarValue)
+                        Print "    format: " & CStr(field.getChild("format").scalarValue)
+                        Print "    access: " & CStr(field.getChild("fieldAccess").scalarValue)
+                    End ForAll
+                Else
+                    Print mode.getChild("modeName").toString(False)
+                End If
+            End ForAll
+        End If
+    Catch
+        Print "Error " & Error() & " on line " & Erl()
+    Finally
+        If (Not server is Nothing && server.connected) Then server.logout
+    End Try
+
+End Sub

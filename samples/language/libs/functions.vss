@@ -1,0 +1,148 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+%REM
+    Catches a Type Mismatch (13) error
+%END REM
+Function catch13Error()
+    Dim value as String
+    
+    value = "Hello world"
+    Try
+        If (value = true) Then
+            Print "value is a boolean true"
+        End If
+    Catch Error 13
+        Print "Type Mismatch - value is not a boolean"
+    End Try
+End Function
+
+%REM
+    Catches any error code
+%END REM
+Sub catchError()
+    Try
+        Error 22
+    Catch
+        Print "Catch " & Err() & " on line " & Erl()
+    End Try
+End Sub
+
+%REM
+    If true is passed, throws an error and return "Failure", else returns "Success"
+%END REM
+Function tryCatchExit(throwError as boolean) as String
+    Try
+        If (throwError) Then Error 400, "You wanted an error"
+        Return "Success"
+    Catch
+        Print "Error " & Error() & " on line " & Erl()
+        Return "Failure"
+    End Try
+End Function
+
+%REM
+    Returns a stack trace. If true is passed, `getStack` will appear twice, otherwise once
+%END REM
+Function getStack(recurse as Boolean) as String
+    If (recurse) Then
+        Return getStack(false)
+    Else
+        Print GetThreadInfo(12)
+        Return GetThreadInfo(12)
+    End If
+End Function
+
+%REM
+    Showing that Finally block is triggered before branching out of Try and Catch
+%END REM
+Function doFinally(throwError as Boolean) As String
+    Try
+        If (throwError) Then Error 400, "You wanted an error"
+        Return "Success"
+    Catch
+        Print "Error " & Error() & " on line " & Erl()
+        Return "Failure"
+    Finally
+        Print "NOTE: Running in finally"
+    End Try
+End Function
+
+%REM
+    Shows nested Try/Catch blocks
+%END REM
+Function nestTC(error1 as Boolean, error2 as Boolean) as Integer
+    Try
+        If (error1) Then Error 400, "You wanted an outer error"
+        Print "Outer success"
+        Return 1
+    Catch
+        Print "Error " & Error() & " on line " & Erl()
+        Try
+            If (error2) Then Error 401, "You wanted an inner error"
+            Print "Inner success"
+            Return 2
+        Catch
+            Print "Error " & Error() & " on line " & Erl()
+            Return 3
+        End Try
+    End Try
+End Function
+
+%REM
+    Example of printing an array element and incrementing
+%END REM
+Sub loopArray(passedArr as Variant)
+    Dim i as Integer
+    While i <= UBound(passedArr)
+        Print passedArr(i++)
+    Wend
+End Sub
+
+%REM
+    Same as above, but increment in Do instruction
+%END REM
+Sub loopArrayDo(passedArr as Variant)
+    Dim i as Integer
+    Do
+        Print passedArr(i)
+    Loop Until ++i > UBound(passedArr)
+End Sub
+
+%REM
+    Same as above, but increment in Do instruction
+%END REM
+Sub loopArrayDoPostfix(passedArr as Variant)
+    Dim i as Integer
+    Do
+        Print passedArr(i)
+    Loop Until i++ = UBound(passedArr)
+End Sub
+
+%REM
+    Prints an array element up to the second "the"
+%END REM
+Sub loopArrayExitThe(passedArr as Variant)
+    Dim i as Integer
+    Dim the as Integer
+    Do Until i > UBound(passedArr)
+        If (LCase(passedArr(i)) = "the") Then
+            If the++ > 0 Then Exit Do
+        End If
+        Print passedArr(i++)
+    Loop
+End Sub

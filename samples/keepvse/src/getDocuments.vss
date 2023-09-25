@@ -1,0 +1,49 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+Use "../libs/functions"
+
+' UPDATE THESE
+Const UNID1 = ""
+Const UNID2 = ""
+Const UNID3 = ""
+
+Sub Initialize
+    Dim server as New KeepServer
+    Dim scope as KeepScope
+    Dim unids(2) as String
+    Dim docs as Variant
+
+    Try
+        server.serverURL = SERVER_NAME
+        Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
+        Set scope = server.getScope("demo")
+        unids(0) = UNID1
+        unids(1) = UNID2
+        unids(2) = UNID3
+        docs = getDocuments(server, "demo", unids)
+        ForAll doc in docs
+            Print doc
+        End ForAll
+
+    Catch
+        Print "Error " & Error() & " on line " & Erl()
+    Finally
+        If (Not server is Nothing && server.connected) Then server.logout
+    End Try
+
+End Sub

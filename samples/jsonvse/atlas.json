@@ -1,0 +1,45 @@
+{
+    "name": "json-samples",
+    "description": "HCL VoltScript JSON Samples",
+    "license": "Apache 2.0",
+    "authors": [
+        "Paul Withers",
+        "Devin S. Olson"
+    ],
+    "version":"1.0.0",
+    "mainScripts": [
+        "main.vss"
+    ],
+    "sourceDir": "src",
+    "testDir": "test",
+    "vsesDir": "vses",
+    "libsDir": "libs",
+    "repositories": [
+        {
+            "id": "volt-mx-marketplace",
+            "type": "marketplace",
+            "url": "https://community.demo-hclvoltmx.com/marketplace/asset"
+        },
+        {
+            "id": "hcl-github",
+            "type": "github",
+            "url": "https://api.github.com/repos/HCL-TECH-SOFTWARE"
+        }
+    ],
+    "dependencies": [
+        {
+            "library": "voltscript-testing",
+            "version": "1.0.0",
+            "module": "VoltScriptTesting.vss",
+            "repository": "hcl-github"
+        }
+    ],
+    "vseDependencies": {
+        "JsonVSE": {
+            "library": "25265",
+            "version": "1.0.0",
+            "module": "25264/19416",
+            "repository":"volt-mx-marketplace"
+        }
+    }
+}

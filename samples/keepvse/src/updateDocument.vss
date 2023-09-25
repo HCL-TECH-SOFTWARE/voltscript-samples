@@ -1,0 +1,45 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+Use "../libs/functions"
+
+Const UNID = "" 'UPDATE THIS
+
+Sub Initialize
+    Dim server as New KeepServer
+    Dim scope as KeepScope
+    Dim parser as New JsonParser()
+    Dim jsonObj as New JsonObject()
+    Dim doc as KeepDocument
+
+    Try
+        server.serverURL = SERVER_NAME
+        Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
+        Set scope = server.getScope("demo")
+
+        Set doc = scope.getDocument(UNID)
+        Call parser.loadFromJSON(doc.JsonValue)
+        Set jsonObj = parser.getRootObject()
+        Call jsonObj.insertValue("Color", "Red")
+        doc.JsonValue = jsonObj.toString(False)
+        Call doc.save("", "default")
+    Catch
+        Print "Error " & Error() & " on line " & Erl()
+    Finally
+        If (Not server is Nothing && server.connected) Then server.logout
+    End Try
+End Sub

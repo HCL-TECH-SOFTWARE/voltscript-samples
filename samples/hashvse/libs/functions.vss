@@ -1,0 +1,147 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+UseVSE "*HashVSE"
+Use "../libs/constants"
+
+%REM
+    Converts a string to a byte array
+%END REM
+Function convertStringToBytes(passedStr as String) as Variant
+    Dim hu as New HashUtilities()
+    Return hu.stringToBytes(passedStr)
+End Function
+
+%REM
+    Converts a byte array to a non-hexadecimal string
+%END REM
+Function convertBytesToString(tempVal as Variant) as String
+    Dim hu as New HashUtilities()
+    Return hu.bytesToString(tempVal, False)
+End Function
+
+%REM
+    Base64 encodes a string
+%END REM
+Function base64Encode(passedStr as String) as String
+    Dim hu as New HashUtilities()
+    Return hu.base64Encode(passedStr)
+End Function
+
+%REM
+    Decodes a base64 string
+%END REM
+Function base64Decode(base64Str as String) as String
+    Dim hu as New HashUtilities()
+    Return hu.base64Decode(base64Str)
+End Function
+
+%REM
+    Base64 encodes a byte array
+%END REM
+Function base64ByteEncode(tempVal as Variant) as String
+    Dim hu as New HashUtilities()
+    Return hu.base64EncodeB(tempVal)
+End Function
+
+%REM
+    Decodes a base64 string to a byte array
+%END REM
+Function base64ByteDecode(base64Str as String) as Variant
+    Dim hu as New HashUtilities()
+    Return hu.base64DecodeB(base64Str)
+End Function
+
+%REM
+    Convert strings to SHA strings
+%END REM
+Sub convertSHA(inputStr as String, output1 as String, output256 as String,_
+    output512 as String)
+    Dim hu as New HashUtilities()
+    output1 = hu.SHA1(inputStr)
+    output256 = hu.SHA256(inputStr)
+    output512 = hu.SHA512(inputStr)
+End Sub
+
+%REM
+    Convert strings to SHA byteArrays
+%END REM
+Sub convertSHABytes(inputStr as Variant, output1 as Variant, output256 as Variant,_
+    output512 as Variant)
+    Dim hu as New HashUtilities()
+    output1 = hu.SHA1B(inputStr)
+    output256 = hu.SHA256B(inputStr)
+    output512 = hu.SHA512B(inputStr)
+End Sub
+
+%REM
+    Converts a string with MD5 hash
+%END REM
+Function convertMD5(inputStr as String) as String
+    Dim hu as New HashUtilities()
+    Return hu.MD5(inputStr)
+End Function
+
+%REM
+    Converts a byte array with MD5 hash
+%END REM
+Function convertMD5Bytes(inputBytes as Variant) as Variant
+    Dim hu as New HashUtilities()
+    Return hu.MD5B(inputBytes)
+End Function
+
+%REM
+    Converts a file's content to a string with MD5 hash
+%END REM
+Function convertFileMD5() as String
+    Dim hu as New HashUtilities()
+    Return hu.FileMD5(CurDir & "/samples/lorem.txt")
+End Function
+
+%REM
+    Converts a file's content to a string with MD5 hash
+%END REM
+Function convertFileMD5Bytes() as Variant
+    Dim hu as New HashUtilities()
+    Return hu.FileMD5B(CurDir & "/samples/lorem.txt")
+End Function
+
+%REM
+    Populates initialization vector and keys for AES encryption
+%END REM
+Sub initializeForAES(iv as Variant, key128 as Variant, key256 as Variant)
+    Dim cu as New CryptoUtilities()
+    iv = cu.createAESIV()
+    key128 = cu.createAES128Key()
+    key256 = cu.createAES256Key()
+End Sub
+
+%REM
+    Encrypts a file, receiving either a 128-bit or 256-bit key
+%END REM
+Function encryptFile(sourceFile as String, targetFile as String, iv as Variant, key as Variant)
+    Dim cu as New CryptoUtilities()
+    Call cu.fileEncryptAES(sourceFile, targetFile, iv, key, True)
+End Function
+
+%REM
+    Encrypts a file, receiving either a 128-bit or 256-bit key
+%END REM
+Function decryptFile(sourceFile as String, targetFile as String, iv as Variant, key as Variant)
+    Dim cu as New CryptoUtilities()
+    Call cu.fileDecryptAES(sourceFile, targetFile, iv, key, True)
+End Function

@@ -1,0 +1,51 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+Use "../libs/dir"
+Use "../libs/VoltScriptTesting"
+
+Sub Initialize
+
+    Dim OSUtils as New OSUtils
+    Dim testRunner as New TestRunner("Test directories and files")
+    Dim testSuite as New TestSuite("Test directories and files")
+    Call testRunner.addTestSuite(testSuite)
+
+    Call testSuite.describe("Prove curDir is current working directory").assertEqualsString(CurDir, getCurrentWorkingDirectory(), True)
+
+    Call testSuite.describe("Check tempDir exists").assertTrue(checkIsDir(OSUtils.tempDir))
+    Call testSuite.describe("Check tempDir/foo does not exist").assertFalse(checkIsDir(OSUtils.tempDir & "/foo"))
+
+    Dim expected as String
+    Dim actual as String
+    expected = OSUtils.tempDir & "/foo/bar"
+    actual = buildFooBarPath()
+    Call testSuite.describe("Check PathUtils builds as expected").assertEqualsString(expected, actual, True)
+    Call testSuite.describe("Check directory with missing parent does not exist").assertFalse(checkIsDir(actual))
+
+    Call testSuite.describe("Check non-existent file in tempDir").assertFalse(checkIsFile(OSUtils.tempDir & "/temp.txt"))
+    expected = OSUtils.tempDir & "/foo/test.txt"
+    actual = buildFooTestFilePath()
+    Call testSuite.describe("Check PathUtils file builds as expected").assertEqualsString(expected, actual, True)
+    Call testSuite.describe("Check directory with missing parent does not exist").assertFalse(checkIsFile(actual))
+
+    Call testSuite.describe("Check creating directories").assertTrue(makeDirectories(OSUtils.tempDir & "/foo/bar"))
+    Call testSuite.describe("Check creating existing directories").assertTrue(makeDirectories(OSUtils.tempDir & "/foo/bar"))
+    Call testSuite.describe("Check deleting directory containing directories works").assertTrue(removeDirectories(OSUtils.tempDir & "/foo"))
+
+    Call testSuite.describe("Check files is array").assertTrue(IsArray(getFiles(OSUtils.tempDir)))
+End Sub

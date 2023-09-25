@@ -1,0 +1,143 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+UseVSE "*JsonVSE"
+
+%REM
+    Builds a JSON object with two children, a string and a number.
+    Note, the children will be ordered alphabetically, so "Number" will be 0,
+    "String" will be 1.
+%END REM
+Function buildJsonObj() as JsonObject
+    Dim jsonObj as New JsonObject
+
+    Call jsonObj.insertValue("String", "One")
+    Call jsonObj.insertValue("Number", 2)
+
+    Return jsonObj
+End Function
+
+%REM
+    Builds a JSON Object that is an array with two string elements and a number.
+    Note the order of insertion is retained
+%END REM
+Function buildJsonArr() as JsonObject
+    Dim jsonArr as New JsonObject
+
+    Call jsonArr.appendToJsonArray("One")
+    Call jsonArr.appendToJsonArray("Two")
+    Call jsonArr.appendToJsonArray(2)
+
+    Return jsonArr
+End Function
+
+%REM
+    Adds a String array to the passed JSON object
+%END REM
+Sub addVSArrToObj(jsonObj as JsonObject)
+    Dim vals(1) as String
+    vals(0) = "Hello"
+    vals(1) = "World"
+
+    Call jsonObj.insertValue("StringArray", vals)
+End Sub
+
+%REM
+    Adds the passed JSON array to the passed JSON object twice.
+    The first time it's added by using insertValue and defining the label,
+    the second time it's added as a child called "ObjectArray",
+    the third time it's added as a child called "ArrayLabel"
+%END REM
+Sub addJsonArrToObject(jsonObj as JsonObject, jsonArr as JsonObject)
+    Call jsonObj.insertValue("JSONArray", jsonArr)
+
+    Call jsonObj.insertObject(jsonArr, "ObjectArray")
+    jsonArr.label = "ArrayLabel"
+    Call jsonObj.insertObject(jsonArr)
+End Sub
+
+%REM
+    Adds a child JSON object to the passed JSON object
+%END REM
+Sub addJsonObj(jsonObj as JsonObject)
+    Dim childObj as New JsonObject()
+    Call childObj.insertValue("hello","world")
+
+    Call jsonObj.insertValue("child1", childObj)
+    Call jsonObj.insertObject(childObj, "child2")
+
+    childObj.label = "child3"
+    Call jsonObj.insertObject(childObj)
+End Sub
+
+%REM
+    childObj is modified after being added to parent.
+    But because childObj was deep-copied, the version in parent was a snapshot at that time
+%END REM
+Function modifyChild() as JsonObject
+    Dim parent as JsonObject
+    Dim childObj as JsonObject
+    Call childObj.insertValue("elem1","hello world")
+    childObj.label = "child"
+
+    Call parent.insertObject(childObj)
+    Call childObj.insertValue("elem2",2)
+    Print parent.toString(false)
+    Return parent
+End Function
+
+%REM
+    Parses a passed string of JSON. This will throw an error 
+%END REM
+Function parseJsonString(json as String) as JsonObject
+
+    Dim parser as New JsonParser()
+    Call parser.loadFromJson(json)
+    Return parser.getRootObject
+
+End Function
+
+%REM
+    Parses a JSON file at the location passed, relative to the root of this project
+%END REM
+Function parseJsonFile(fileName as String) as JsonObject
+
+    Dim parser as New JsonParser()
+    Call parser.loadFromFile(CurDir & "/" & fileName)
+    Return parser.getRootObject
+
+End Function
+
+%REM
+    Iterates the children in goodJson and checks its type
+%END REM
+Function checkJsonType(jsonObj as JsonObject, label as String) as String
+    Dim child as jsonObject
+    Dim resp as String
+    Dim count as Integer
+
+    Set child = jsonObj.getChild(label)
+    resp = child.JsonType & " "
+    If child.isNumber() Then count += 1
+    If child.isObject() Then count += 2
+    If child.isScalar() Then count += 4
+    If child.isString() Then count += 8
+    If child.isArray() Then count += 16
+    If child.isBoolean() Then count += 32
+    Return resp & count
+
+End Function

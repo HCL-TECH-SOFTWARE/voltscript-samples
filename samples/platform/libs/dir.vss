@@ -1,0 +1,91 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+UseVSE "*OSUtilsVSE"
+
+%REM
+    Check whether a path is a directory
+%END REM
+Function checkIsDir(filePath as String)
+    Dim OSUtils as New OSUtils
+    Return OSUtils.isDirectory(filePath)
+End Function
+
+%REM
+    Use PathUtils to build a path to a directory
+%END REM
+Function buildFooBarPath() as String
+    Dim OSUtils as New OSUtils()
+    Dim pathUtils as New PathUtils()
+
+    Call pathUtils.addToPath(OSUtils.tempDir)
+    Call pathUtils.addToPath("foo")
+    Call pathUtils.addToPath("bar")
+    Return pathUtils.toString
+End Function
+
+%REM
+    Use PathUtils to build a path to a file
+%END REM
+Function buildFooTestFilePath() as String
+    Dim OSUtils as New OSUtils()
+    Dim pathUtils as New PathUtils()
+
+    Call pathUtils.addToPath(OSUtils.tempDir)
+    Call pathUtils.addToPath("foo")
+    Call pathUtils.addToPath("test.txt")
+    Return pathUtils.toString
+End Function
+
+%REM
+    Check whether a path is a file
+%END REM
+Function checkIsFile(fileName as String) as Boolean
+    Dim OSUtils as New OSUtils()
+    Return OSUtils.isFile(fileName)
+End Function
+
+%REM
+    Create directories
+%END REM
+Function makeDirectories(filePath as String) as Boolean
+    Dim OSUtils as New OSUtils()
+    Return osUtils.makeDirectories(filePath)
+End Function
+
+%REM
+    Remove directories and any files within it
+%END REM
+Function removeDirectories(filePath as String) as Boolean
+    Dim OSUtils as New OSUtils()
+    Return OSUtils.removeDir(filePath, true)
+End Function
+
+%REM
+    Gets files in a directory as a string array
+%END REM
+Function getFiles(filePath as String) as Variant
+    Dim OSUtils as New OSUtils()
+    Return OSUtils.getFilesInDir(filePath)
+End Function
+
+%REM
+    This will return the directory the script is running from, not the directory of this script
+%END REM
+Function getCurrentWorkingDirectory() as String
+    Return CurDir
+End Function

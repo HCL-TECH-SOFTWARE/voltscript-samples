@@ -1,0 +1,24 @@
+Option Declare
+Option Public
+
+Use "../libs/functions.vss"
+
+Sub Initialize
+	Dim server As CouchServer
+	Dim db As CouchDatabase
+    Dim loginResult as Boolean
+
+	loginResult = loginCouchDbServer(server, USERNAME, PASSWORD, SERVER_URL, "")
+	If Not loginResult Then Return
+
+    Print "Login server: " & loginResult
+    Print "CouchServer.CouchVersion: " & server.CouchVersion
+	Print "CouchServer UUID: " & server.getUUID()
+
+	Call getCouchDbFeatures(server)
+	Call getCouchDbDatabaseNames(server) 
+	Set db = getOrCreateCouchDbDatabase(server, "demo")
+
+	Call PrintCouchDbDocumentIDs(db)
+
+End Sub

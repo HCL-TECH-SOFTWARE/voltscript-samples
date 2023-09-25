@@ -1,0 +1,12 @@
+# VS Code
+.devcontainer
+.devcontainerjson
+.vscode/
+
+# VoltScript
+effective-atlas.json
+/vses/*
+*/unit-test-reports/*
+seti.ini
+libcurl.log
+core

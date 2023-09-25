@@ -1,0 +1,32 @@
+{
+    "name": "language-samples",
+    "description": "HCL VoltScript Language Samples",
+    "version": "1.0.0",
+    "authors": [
+        "Paul Withers"
+    ],
+    "license": "Apache 2.0",
+    "sourceDir": "src",
+    "testDir": "test",
+    "libsDir": "libs",
+    "mainScripts": [
+        "main.vss"
+    ],
+    "unitTestScripts": [
+        "unittests.vss"
+    ],
+    "repositories": [
+        {
+            "id": "hcl-github",
+            "type": "github",
+            "url": "https://api.github.com/repos/HCL-TECH-SOFTWARE"
+        }
+    ],
+    "dependencies": [
+        {
+            "library": "voltscript-testing",
+            "version": "1.0.0",
+            "module": "VoltScriptTesting.vss"
+        }
+    ]
+}

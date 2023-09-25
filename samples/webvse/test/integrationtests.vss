@@ -1,0 +1,47 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+Use "../libs/functions"
+Use "../libs/VoltScriptTesting"
+
+Sub Initialize
+
+    Dim testRunner as New TestRunner("Web Integration Tests")
+    Dim testSuite as New TestSuite("WebResponse Tests")
+    Call testRunner.addTestSuite(testSuite)
+    Dim resp as WebResponse
+    Dim parser as new JsonParser
+    Dim jsonObj as JsonObject
+    
+    Set resp = makeBasicRequest()
+    Call testSuite.describe("Check request successful").assertEqualsInteger(200, resp.responseCode)
+    Call testSuite.describe("Check response content type is text").assertEqualsString("text/plain", resp.ContentType, True)
+    Call testSuite.describe("Check content body").assertEqualsString("200 OK", resp.ContentBody, True)
+
+    Set resp = makeJsonRequest()
+    Call testSuite.describe("Check JSON return code").assertEqualsInteger(418, resp.responseCode)
+    Call testSuite.describe("Check content type is JSON").assertEqualsString("application/json", resp.ContentType, True)
+    Call parser.loadFromJson(StrLeft(resp.ContentBody, Chr(10)))
+    Set jsonObj = parser.getRootObject
+    Call testSuite.describe("Check description is I'm a teapot").assertEqualsString("I'm a teapot", jsonObj.getChild("description").scalarValue, true)
+
+    Dim newServer as New WebServer
+    Set resp = makeRequestFromUrlBuilder(newServer)
+    Call testSuite.describe("Check response is not nothing").assertTrue(Not resp is Nothing)
+    Call testSuite.describe("Check URLBuilder return code").assertEqualsInteger(200, resp.responseCode)
+
+End Sub

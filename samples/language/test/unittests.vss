@@ -1,0 +1,81 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+Use "../libs/functions"
+Use "../libs/logicalFunctions"
+Use "../libs/VoltScriptTesting"
+
+Sub Initialize
+
+    Dim testRunner as New testRunner("Language tests")
+    Dim result as Boolean
+
+    result = errorTests(testRunner)
+    result = result And logicalTests(testRunner)
+
+    If result Then Print "TESTS SUCCESSFUL" Else Print "TESTS UNSUCCESSFUL"
+
+End Sub
+
+Function errorTests(testRunner as TestRunner) as Boolean
+
+    Dim testSuite as New TestSuite("Error Tests")
+    Call testRunner.addTestSuite(testSuite)
+    Dim splitStack as Variant
+    Call testSuite.describe("Test try exit success")._
+        assertEqualsString("Success", tryCatchExit(False), True)
+    Call testSuite.describe("Test catch exit success")._
+        assertEqualsString("Failure", tryCatchExit(True), True)
+
+    splitStack = FullTrim(Split(getStack(false), Chr(10)))
+    Call testSuite.describe("Test get stack without recursion")._
+        assertEqualsInteger(2, UBound(splitStack))
+    splitStack = FullTrim(Split(getStack(true), Chr(10)))
+    Call testSuite.describe("Test get stack with recursion")._
+        assertEqualsInteger(3, UBound(splitStack))
+        
+    Call testSuite.describe("Test nested no error").assertEqualsInteger(1, nestTC(false, False))
+    Call testSuite.describe("Test nested outer error").assertEqualsInteger(2, nestTC(True, False))
+    Call testSuite.describe("Test nested inner error").assertEqualsInteger(3, nestTC(True, True))
+        
+    Return testSuite.ranSuccessfully()
+End Function
+
+Function logicalTests(testRunner as TestRunner) as Boolean
+    Dim testSuite as New TestSuite("Logical Tests")
+    Call testRunner.addTestSuite(testSuite)
+
+    Call testSuite.describe("Check traditional Or fails")
+    Try
+        Call orFail()
+        Call testSuite.addResult(False, "Or should have thrown an error")
+    Catch
+        Call testSuite.addResult(True, "")
+    End Try
+    Call testSuite.describe("Test ||").assertEqualsString("Success", orSuccess(), True)
+    Call testSuite.describe("Check traditional And fails")
+    Try
+        Call andFail()
+        Call testSuite.addResult(False, "And should have thrown an error")
+    Catch
+        Print Error()
+        Call testSuite.addResult(True, "")
+    End Try
+    Call testSuite.describe("Test &&").assertEqualsString("Success", andSuccess(), True)
+    
+    Return testSuite.ranSuccessfully()
+End Function

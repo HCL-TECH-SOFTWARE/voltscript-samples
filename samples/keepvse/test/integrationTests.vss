@@ -1,0 +1,53 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+Use "../libs/functions"
+Use "../libs/VoltScriptTesting"
+
+Sub Initialize()
+
+    Dim testRunner as New TestRunner("Domino REST API Tests")
+    Dim server as New KeepServer()
+
+    Try
+        Call runBasicKeepTests(testRunner, server)
+    Catch
+        Print "Error " & Error() & " on line " & Erl()
+    Finally
+        If (Not server is Nothing && server.connected) Then server.logout
+    End Try
+
+End Sub
+
+Function runBasicKeepTests(testRunner as TestRunner, server as KeepServer) as Boolean
+
+    Dim testSuite as New TestSuite("Server tests")
+    Call testRunner.addTestSuite(testSuite)
+
+    Call testSuite.describe("Check servername set").assertNotEqualString("", SERVER_NAME)
+    Call testSuite.describe("Check username set").assertNotEqualString("", Environ$(USERNAME_ENVVAR))
+    Call testSuite.describe("Check password set").assertNotEqualString("", Environ$(USERPASSWORD_ENVVAR))
+
+    If Not testSuite.ranSuccessfully Then Return False
+
+    ' Uses environment variables KEEP_USERNAME and KEEP_PASSWORD
+    Call login(server, SERVER_NAME, Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
+    Call testSuite.describe("Check login successful").assertTrue(server.Connected)
+
+    Return testSuite.ranSuccessfully()
+
+End Function

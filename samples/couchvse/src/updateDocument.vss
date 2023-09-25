@@ -1,0 +1,29 @@
+Option Public
+Option Declare
+
+Use "../libs/functions"
+
+Const ID = ""
+
+Sub Initialize
+
+	Dim server As CouchServer
+    Dim db as CouchDatabase
+    Dim loginResult as Boolean
+    Dim doc as CouchDocument
+
+	loginResult = loginCouchDbServer(server, USERNAME, PASSWORD, SERVER_URL, "")
+	If Not loginResult Then Return
+
+	Set db = getOrCreateCouchDbDatabase(server, "demo")
+    If db.isDocument(ID) Then
+        Set doc = db.GetDocumentByID(ID)
+        Call doc.addItem("Pet", "Squirrel")
+        Call doc.addItemToJsonObject("Name", "Color", "Blue")
+        Call doc.addItemToJsonObject("HexCode", "Color", "0000FF")
+        Call doc.save()
+
+        Call PrintCouchDocumentInfo(doc)
+    End If
+
+End Sub

@@ -1,0 +1,54 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+Use "../libs/functions"
+
+Sub printStringFormatExamples() 
+
+    Dim locale as String 
+    Dim formatType as Integer 
+
+    %REM 
+        Before using Locales, you must ensure that the appropriate locale has been installed. 
+
+        Locale codes consist of appropriate ISO 639 Language and ISO 3166 Country codes concatenated with an underscore, 
+        followed by a period and the encoding format.
+
+        ISO 639 Language Codes    https://www.iso.org/iso-639-language-codes.html
+        ISO 3166 Country Codes    https://www.iso.org/iso-3166-country-codes.html 
+    
+        Example: 
+            locale = "en_US.utf8" ' English (United States)
+            locale = "es_MX.utf8" ' Spanish (Mexico)
+            locale = "fr_BE.utf8" ' French  (Belgium)
+    %END REM 
+    
+    ' locale = YOUR APPROPRIATE LOCALE CODE 
+    Do
+        Print toStringFormatTypeLocale(++formatType, locale) 
+    Loop Until (formatType > 2) 
+End Sub 
+
+Sub Initialize
+  
+    Try 
+        Call toStringFormatExample()
+        Call printStringFormatExamples() 
+    Catch 
+        Print "Error " & Error() & " on line " & Erl()
+    End Try 
+
+End Sub

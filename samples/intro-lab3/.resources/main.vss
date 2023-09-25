@@ -1,0 +1,28 @@
+Option Declare
+Option Public
+
+UseVSE "*StreamVSE"
+UseVSE "*JsonVSE"
+Use "../libs/functions"
+
+Sub Initialize
+
+    Const EOL_CRLF = 0
+    Const EOL_ANY = 4
+
+    Dim pipeStream as New Stream
+    Dim data as String
+
+    ' Open pipe to STDIO
+    Call pipeStream.open("", "STDIO")
+    data = pipeStream.readText(true, EOL_ANY, 5)    ' 3rd param is timeout
+
+    Try
+        Print mainFunction(data).toString(True)
+    Catch
+        Print "Error " & Error() & " on line " & Erl()
+    Finally
+        Call pipeStream.close()
+    End Try
+
+End Sub

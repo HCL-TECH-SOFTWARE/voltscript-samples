@@ -1,0 +1,59 @@
+{
+    "name": "platform-samples",
+    "description": "HCL VoltScript Platform Samples",
+    "version": "1.0.0",
+    "authors": [
+        "Paul Withers"
+    ],
+    "license": "Apache 2.0",
+    "sourceDir": "src",
+    "testDir": "test",
+    "libsDir": "libs",
+    "vsesDir": "vses",
+    "mainScripts": [
+        "main.vss"
+    ],
+    "unitTestScripts": [
+        "unittests.vss"
+    ],
+    "repositories": [
+        {
+            "id": "volt-mx-marketplace",
+            "type": "marketplace",
+            "url": "https://community.demo-hclvoltmx.com/marketplace/asset"
+        },
+        {
+            "id": "hcl-github",
+            "type": "github",
+            "url": "https://api.github.com/repos/HCL-TECH-SOFTWARE"
+        }
+    ],
+    "dependencies": [
+        {
+            "library": "voltscript-testing",
+            "version": "1.0.0",
+            "module": "VoltScriptTesting.vss",
+            "repository": "hcl-github"
+        }
+    ],
+    "vseDependencies": {
+        "OSUtilsVSE": {
+            "library": "25282",
+            "version": "1.0.0",
+            "module": "25281/19404",
+            "repository":"volt-mx-marketplace"
+        },
+        "ZipVSE": {
+            "library": "25288",
+            "version": "1.0.0",
+            "module": "25287/19410",
+            "repository":"volt-mx-marketplace"
+        },
+        "StreamVSE": {
+            "library": "25284",
+            "version": "1.0.0",
+            "module": "25283/19424",
+            "repository": "volt-mx-marketplace"
+        }
+    }
+}

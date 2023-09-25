@@ -1,0 +1,52 @@
+{
+    "name": "input",
+    "description": "Samples for managing user input",
+    "authors": [
+        "Paul Withers"
+    ],
+    "version": "1.0.0",
+    "publisher": "HCL Software",
+    "license": "Apache 2.0",
+    "library": "voltscript-docs",
+    "sourceDir": "src",
+    "testDir": "test",
+    "libsDir": "libs",
+    "vsesDir": "vses",
+    "mainScripts": [
+        "main.vss"
+    ],
+    "repositories": [
+        {
+            "id": "volt-mx-marketplace",
+            "type": "marketplace",
+            "url": "https://community.demo-hclvoltmx.com/marketplace/asset"
+        },
+        {
+            "id": "hcl-github",
+            "type": "github",
+            "url": "https://api.github.com/repos/HCL-TECH-SOFTWARE"
+        }
+    ],
+    "dependencies": [
+        {
+            "library": "voltscript-testing",
+            "version": "1.0.0",
+            "module": "VoltScriptTesting.vss",
+            "repository": "hcl-github"
+        }
+    ],
+    "vseDependencies": {
+        "StreamVSE": {
+            "library": "25284",
+            "version": "1.0.0",
+            "module": "25283/19424",
+            "repository": "volt-mx-marketplace"
+        },
+        "ContextVSE": {
+            "library": "25276",
+            "version": "1.0.0",
+            "module": "25275/19398",
+            "repository":"volt-mx-marketplace"
+        }
+    }
+}

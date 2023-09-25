@@ -1,0 +1,46 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Use "../libs/functions"
+Use "../libs/VoltScriptTesting"
+
+Sub Initialize
+
+    Dim testRunner as New TestRunner("Test REST services")
+    Dim testSuite as New TestSuite("WebServer Unit Tests")
+    Dim server as WebServer
+    Call testRunner.addTestSuite(testSuite)
+
+    Set server = getWebServer()
+    Call testSuite.describe("Test web server is not nothing").assertTrue(Not server Is Nothing)
+    Call testSuite.describe("Check server protocol is HTTPS").assertEqualsString("HTTPS", server.protocol, True)
+    Call testSuite.describe("Check HostUrl").assertEqualsString("httpstat.us", server.HostUrl, True)
+
+    Dim testString as String
+    Dim resultString as String
+    testString = "target=https://httpstat.us"
+    resultString = "target%3Dhttps%3A%2F%2Fhttpstat.us"
+    Call testSuite.describe("Test URL encoding matches").assertEqualsString(resultString, server.URLencode(testString), True)
+    Call testSuite.describe("Test URL decoding matches").assertEqualsString(testString, server.URLdecode(resultString), True)
+
+    Dim testSuite2 as New TestSuite("Parsing Unit Tests")
+    Dim json as String
+    Dim jsonObj as JsonObject
+    Call testRunner.addTestSuite(testSuite2)
+
+    json = |{"code":418,"description":"I'm a teapot"}|
+    Set jsonObj = parseResponse(json)
+    Call testSuite2.describe("Test code is 418").assertEqualsInteger(418, CInt(jsonObj.getChild("code").scalarValue))
+    Call testSuite2.describe("Test description is I'm a teapot").assertEqualsString("I'm a teapot", jsonObj.getChild("description").scalarValue, True)
+End Sub

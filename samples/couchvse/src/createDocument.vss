@@ -1,0 +1,22 @@
+Option Public
+Option Declare
+
+Use "../libs/functions"
+
+Sub Initialize
+
+	Dim server As CouchServer
+    Dim db as CouchDatabase
+    Dim loginResult as Boolean
+    Dim doc as CouchDocument
+
+	loginResult = loginCouchDbServer(server, USERNAME, PASSWORD, SERVER_URL, "")
+	If Not loginResult Then Return
+
+	Set db = getOrCreateCouchDbDatabase(server, "demo")
+    Set doc = db.createDocument("", |{"firstName":"John","lastName":"Doe","email":"jdoe@acme.com"}|)
+    Call doc.save()
+    
+    Call PrintCouchDocumentInfo(doc)
+
+End Sub

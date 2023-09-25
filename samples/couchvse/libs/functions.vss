@@ -1,0 +1,219 @@
+%REM 
+    CouchUtils.vss 
+    
+%END REM 
+
+Option Public
+Option Declare
+UseVSE "*CouchVSE"
+
+Const SERVER_URL = ""
+Const USERNAME = ""
+Const PASSWORD = ""
+
+%REM 
+    Function loginCouchDbServer 
+
+    Logs into a Couch Server
+
+    @param server CouchServer instance to which to login 
+    @param user UserID to be used for the login 
+    @param password Password used to login 
+    @param url URL Used to identify location of sever 
+    @param certificatepath Certificate path of a non-standard CRT certificate used for the server (unused if blank)
+
+    @return Flag indicating success / failure of the login attempt 
+%END REM 
+Function loginCouchDbServer(server As CouchServer, user As String, password As String, url As String, certificatepath As String) As Boolean 
+    
+    Set server = new CouchServer() 
+
+	If url = "" Then
+		Print "Set variables for CouchDB server"
+		Return
+	End If
+
+    server.User = user
+    server.Password = password 
+    server.URL = url
+
+    If (Len(FullTrim(certificatepath)) > 0) Then
+        'Only set certificate path if not blank
+        server.CertificatePath = certificatepath
+    End If
+
+    Call server.Login()
+
+    return True 
+End Function
+
+%REM
+    Print total number of features and list them,
+    converted from an array to a string
+%END REM
+Function getCouchDbFeatures(server As CouchServer) As Variant 
+    Dim result As Variant 
+    Dim i As Integer 
+
+    result = server.Features
+
+    If IsArray(result) Then i = Ubound(result) + 1
+    Print "There are " & i & " Features: ", join(result, |, |)
+
+    Return result 
+End Function
+
+%REM
+    Print total number of databases and list them, converting array to string
+%END REM
+Function getCouchDbDatabaseNames(server As CouchServer) As Variant 
+    Dim result As Variant 
+    Dim i As Integer 
+
+    result = server.DatabaseNames
+
+    If IsArray(result) Then i = Ubound(result) + 1
+    Print "There are " & i & " DatabaseNames: ", join(result, |, |)
+
+    Return result 
+End Function
+
+%REM
+    Get or create a database
+%END REM
+Function getOrCreateCouchDbDatabase(server As CouchServer, dbName As String) As CouchDatabase 
+    If server.IsDatabase(dbName) Then
+        return server.GetDb(dbName)
+    Else
+        Return server.CreateDb(dbName)
+    End If
+End Function
+
+%REM
+    Print all documents IDs
+%END REM
+Sub PrintCouchDbDocumentIDs(source As CouchDatabase) 
+    Dim elements As Variant 
+    Dim i As Integer
+
+    If (source Is Nothing) Then Return 
+
+    Print |Getting DocumentIDs from | & source.Name 
+    elements = source.DocumentIDs 
+
+    Print |Retrieved the DocumentIDs|
+
+    If IsArray(elements) Then i = Ubound(elements) + 1
+    Print "There are " & i & " Documents: ", join(elements, |, |) 
+End Sub
+
+%REM
+    Creates a document in a specific CouchDB database
+%END REM
+Function createDocument(db as CouchDatabase) as CouchDocument
+    
+    Dim doc as CouchDocument
+
+    Set doc = db.createDocument("", |{"firstName":"John","lastName":"Doe","email":"jdoe@acme.com"}|)
+    Call doc.save()
+    Return doc
+
+End Function
+
+%REM
+    Prints metadata info about a CouchDocument
+%END REM
+Sub PrintCouchDocumentInfo(document as CouchDocument)
+
+    Dim attachment as CouchAttachment
+
+    Print |document.DesignType: | & document.DesignType
+    Print |document.ID: | & document.ID
+    Print |document.isModified: | & document.isModified
+    Print |document.isSaved: | & document.isSaved
+    Print |document.JSONValue: | & document.JSONValue
+    Print |document.Revision: | & document.Revision
+    Print |document.URL: | & document.URL
+    ForAll attachName in document.Attachments
+        If (attachName != "") Then
+            Set attachment = document.getAttachmentInfo(attachName)
+            Print |attachment.Name: | & attachment.Name 
+            Print |attachment.ContentLength: | & attachment.ContentLength 
+            Print |attachment.ContentType: | & attachment.ContentType
+        End If
+    End ForAll
+
+End Sub
+
+%REM
+    Gets a document, checking if it exists first
+%END REM
+Function getDocument(db as CouchDatabase, id as String) as CouchDocument
+    
+    If db.isDocument(ID) Then Return db.GetDocumentByID(ID)
+
+End Function
+
+%REM
+    Updates a document
+%END REM
+Function updateDocument(db as CouchDatabase, id as String) as CouchDocument
+
+    Dim doc as CouchDocument
+    If db.isDocument(ID) Then
+        Set doc = db.GetDocumentByID(ID)
+        Call doc.addItem("Pet", "Squirrel")
+        Call doc.addItemToJsonObject("Name", "Color", "Blue")
+        Call doc.addItemToJsonObject("HexCode", "Color", "0000FF")
+        Call doc.save()
+        Return doc
+    End If
+
+End Function
+
+%REM
+    Deletes a document from the database, removing all items from the document
+%END REM
+Function deleteDocument(db as CouchDatabase, id as String) as Boolean
+
+    If db.isDocument(ID) Then
+        Return db.deleteDocumentByID(ID, False)
+    End If
+
+End Function
+
+%REM
+    Gets a JSON object corresponding to the first two documents in a view called "names"
+%END REM
+Function getEntriesFromView(db as CouchDatabase) as String
+
+    Dim view as CouchView
+
+    Set view = db.getViewByID("names")
+    Print view.getSomeRows(0, 2)
+
+End Function
+
+%REM
+    Adds an attachment and reacquires the CouchDocument to update fields
+%END REM
+Sub addAttachment(db as CouchDatabase, doc as CouchDocument, filePath as String)
+    Dim attach as CouchAttachment
+    Set attach = doc.createAttachment("attach", filePath, "text/plain")
+    Call attach.upload
+
+    ' Need to re-acquire document to update CouchDocument fields
+    Set doc = db.GetDocumentByID(doc.ID, False)
+End Sub
+
+%REM
+    Downloads an attachment to a path
+%END REM
+Sub downloadAttachment(doc as CouchDocument, attachName as String, filePath as String)
+
+    Dim attach as CouchAttachment
+    Set attach = doc.getAttachmentInfo(attachName)
+    Call attach.download(filePath, True)
+    Call attach.upload
+
+End Sub

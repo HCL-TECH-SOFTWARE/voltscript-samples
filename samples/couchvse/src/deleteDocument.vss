@@ -1,0 +1,23 @@
+Option Public
+Option Declare
+
+Use "../libs/functions"
+
+Const ID = "foo"
+
+Sub Initialize
+
+	Dim server As CouchServer
+    Dim db as CouchDatabase
+    Dim loginResult as Boolean
+    Dim doc as CouchDocument
+
+	loginResult = loginCouchDbServer(server, USERNAME, PASSWORD, SERVER_URL, "")
+	If Not loginResult Then Return
+
+	Set db = getOrCreateCouchDbDatabase(server, "demo")
+    If db.isDocument(ID) Then
+        Print db.deleteDocumentByID(ID, False)
+    End If
+
+End Sub

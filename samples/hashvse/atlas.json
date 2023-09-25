@@ -1,0 +1,43 @@
+{
+    "name": "web-samples",
+    "authors": [
+        "Paul Withers"
+    ],
+    "description": "HCL VoltScript Web Samples",
+    "license": "Apache 2.0",
+    "version": "1.0.0",
+    "sourceDir": "src",
+    "libsDir": "libs",
+    "vsesDir": "vses",
+    "testDir": "test",
+    "mainScripts": [
+        "main.vss"
+    ],
+    "dependencies": [
+        {
+            "library": "voltscript-testing",
+            "version": "1.0.0",
+            "module": "VoltScriptTesting.vss"
+        }
+    ],
+    "vseDependencies": {
+        "HashVSE": {
+            "library": "25278",
+            "version": "1.0.0",
+            "module": "25277/19400",
+            "repository":"volt-mx-marketplace"
+        }
+    },
+    "repositories": [
+        {
+            "id": "volt-mx-marketplace",
+            "type": "marketplace",
+            "url": "https://community.demo-hclvoltmx.com/marketplace/asset"
+        },
+        {
+            "id": "hcl-github",
+            "type": "github",
+            "url": "https://api.github.com/repos/HCL-TECH-SOFTWARE"
+        }
+    ]
+}

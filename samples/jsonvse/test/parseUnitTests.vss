@@ -1,0 +1,107 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+Use "../libs/functions"
+Use "../libs/VoltScriptTesting"
+
+Const goodJson = |{"firstName":"John","lastName":"Doe","age":42,"children":["Jane","Frank"]}|
+Const badJson = "This is not Json"
+
+Sub Initialize
+
+    Dim testRunner as New TestRunner("Test JSON Parsing")
+    Dim testSuite as New TestSuite("Test String Parsing")
+    Call testRunner.addTestSuite(testSuite)
+
+    Dim jsonObj as JsonObject
+    Set jsonObj = parseJsonString(goodJson)
+    Dim children as JsonObject
+    Dim childrenArr as Variant
+    Call testSuite.describe("Check good JSON parsed").assertTrue(Not jsonObj Is Nothing)
+    Call testSuite.describe("Check jsonObj is object").assertTrue(jsonObj.isObject)
+    Call testSuite.describe("Check age is scalar").assertTrue(jsonObj.getChild("age").isScalar)
+    Call testSuite.describe("Check labels sorted alphabetically").assertEqualsString("age", jsonObj.getChildren()(0).Label, true)
+    Call testSuite.describe("Check firstName").assertEqualsString("John", jsonObj.getChild("firstName").scalarValue, True)
+    Set children = jsonObj.getChild("children")
+    Call testSuite.describe("Check children is array").assertTrue(children.isArray)
+    Call testSuite.describe("Check children has two values").assertEqualsInteger(2, children.childCount)
+    Call testSuite.describe("Check child 1 is Jane").assertEqualsString("Jane", children.getChildren()(0).scalarValue, true)
+    Call testSuite.describe("Check child 2 is Frank").assertEqualsString("Frank", children.getChildren()(1).scalarValue, true)
+    childrenArr = children.valueArray
+    Call testSuite.describe("Check children").assertEqualsString("Jane,Frank", Join(childrenArr, ","), True)
+
+    Call testSuite.describe("Test parsing bad JSON")
+    Try
+        Set jsonObj = parseJsonString(badJson)
+        Call testSuite.addResult(False, "Successfully parsed JSON as " & jsonObj.toString(false))
+    Catch
+        Call testSuite.addResult(True, "")
+        Call testSuite.describe("Verify error number is 400").assertEqualsInteger(400, Err())
+        Call testSuite.describe("Validate error message is as expected").assertTrue(Error() Like "Must supply a valid JSON string*")
+    End Try
+
+    Dim testSuite2 as New TestSuite("Test File Parsing")
+    Call testRunner.addTestSuite(testSuite2)
+    Set jsonObj = parseJsonFile("sampleJson/goodJson.json")
+    Call testSuite2.describe("Check good JSON parsed").assertTrue(Not jsonObj Is Nothing)
+    Call testSuite2.describe("Check jsonObj is object").assertTrue(jsonObj.isObject)
+    Call testSuite2.describe("Check age is scalar").assertTrue(jsonObj.getChild("age").isScalar)
+
+    Call testSuite2.describe("Test parsing bad JSON file")
+    Try
+        Set jsonObj = parseJsonFile("sampleJson/badJson.json")
+        Call testSuite2.addResult(False, "Successfully parsed JSON as " & jsonObj.toString(false))
+    Catch
+        Call testSuite2.addResult(True, "")
+        Call testSuite2.describe("Verify error number is 400").assertEqualsInteger(400, Err())
+        Print Error()
+        Call testSuite2.describe("Validate error message is as expected").assertTrue(Error() Like "JSON text is not valid")
+    End Try
+
+    Call testSuite2.describe("Test opening file not found")
+    Try
+        Set jsonObj = parseJsonFile("sampleJson/noFile.json")
+        Call testSuite2.addResult(False, "Successfully parsed non-existent file")
+    Catch
+        Call testSuite2.addResult(True, "")
+        Call testSuite2.describe("Verify error number is 404").assertEqualsInteger(404, Err())
+        Call testSuite2.describe("Verify error message starts File could not be opened")._
+            assertTrue(Error() Like "File could not be opened*")
+    End Try
+
+    Set jsonObj = parseJsonFile("sampleJson/goodJson.json")
+    Print jsonObj.toString(false)
+    Call testSuite2.describe("Check first name is string").assertEqualsString("string 12", checkJsonType(jsonObj, "firstName"), True)
+    Call testSuite2.describe("Check first name is string").assertEqualsString("number 5", checkJsonType(jsonObj, "age"), True)
+    Call testSuite2.describe("Check first name is string").assertEqualsString("array 16", checkJsonType(jsonObj, "children"), True)
+    Call testSuite2.describe("Check first name is string").assertEqualsString("boolean 36", checkJsonType(jsonObj, "living"), True)
+    Call testSuite2.describe("Check first name is string").assertEqualsString("object 2", checkJsonType(jsonObj, "address"), True)
+
+    Call testSuite2.describe("Check address is child").assertTrue(jsonObj.isChild("address"))
+    Dim path(1) as String
+    path(0) = "address"
+    path(1) = "add1"
+    Call testSuite2.describe("Check address/add1 can be found").assertTrue(jsonObj.isDescendant(path))
+    path(1) = "add3"
+    Call testSuite2.describe("Check address/add3 can't be found").assertFalse(jsonObj.isDescendant(path))
+    path(1) = "add2"
+    Dim actualObj as JsonObject
+    Call testSuite2.describe("Find address/add2").assertTrue(actualObj Is Nothing)
+    Set actualObj = jsonObj.findObjectByPath(path)
+    Call testSuite2.describe("Find address/add2").assertTrue(Not actualObj Is Nothing)
+
+End Sub

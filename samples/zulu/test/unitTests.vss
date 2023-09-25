@@ -1,0 +1,122 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+Use "../libs/VoltScriptTesting"
+Use "../libs/functions"
+
+Sub Initialize
+
+    Dim testRunner as New TestRunner("Date tests")
+    Dim testSuite as New TestSuite("Date parsing tests")
+    Call testRunner.addTestSuite(testSuite)
+
+    Try
+        Dim dateObj as DateTimeObject
+        Call testSuite.describe("Parsing date parts")
+        Set dateObj = parseDateParts()
+        Call testSuite.addResult(True, "")
+        Call testSuite.describe("Check Parts Year").assertEqualsInteger(2023, dateObj.Year)
+        Call testSuite.describe("Check Parts Month").assertEqualsInteger(8, dateObj.Month)
+        Call testSuite.describe("Check Parts Day").assertEqualsInteger(4, dateObj.Day)
+        Call testSuite.describe("Check Parts Hour").assertEqualsInteger(12, dateObj.Hours)
+        Call testSuite.describe("Check Parts Minutes").assertEqualsInteger(20, dateObj.Minutes)
+        Call testSuite.describe("Check Parts Seconds").assertEqualsInteger(25, dateObj.Seconds)
+    Catch
+        Call testSuite.addError("Error " & Error() & " on line " & Erl(), GetThreadInfo(12))
+        Print GetThreadInfo(12)
+        Print "Error " & Error() & " on line " & Erl()
+    End Try
+
+    Try
+        Set dateObj = parseDateEpoch()
+        Call testSuite.describe("Check Epoch Year").assertEqualsInteger(2023, dateObj.Year)
+        Call testSuite.describe("Check Epoch Month").assertEqualsInteger(8, dateObj.Month)
+        Call testSuite.describe("Check Epoch Day").assertEqualsInteger(15, dateObj.Day)
+        Call testSuite.describe("Check Epoch Hour").assertEqualsInteger(12, dateObj.Hours)
+        Call testSuite.describe("Check Epoch Minutes").assertEqualsInteger(8, dateObj.Minutes)
+        Call testSuite.describe("Check Epoch Seconds").assertEqualsInteger(20, dateObj.Seconds)
+        Call testSuite.describe("Check Epoch default date").assertEqualsString("Tue Aug 15 12:08:20 2023Z", dateObj.defaultFormat, True)
+    Catch
+        Call testSuite.addError("Error " & Error() & " on line " & Erl(), GetThreadInfo(12))
+        Print GetThreadInfo(12)
+        Print "Error " & Error() & " on line " & Erl()
+    End Try
+
+    Try
+        Set dateObj = parseISOZuluDateString()
+        Call testSuite.describe("Check Zulu Year").assertEqualsInteger(2023, dateObj.Year)
+        Call testSuite.describe("Check Zulu Month").assertEqualsInteger(8, dateObj.Month)
+        Call testSuite.describe("Check Zulu Day").assertEqualsInteger(15, dateObj.Day)
+        Call testSuite.describe("Check Zulu Hour").assertEqualsInteger(9, dateObj.Hours)
+        Call testSuite.describe("Check Zulu Minutes").assertEqualsInteger(50, dateObj.Minutes)
+        Call testSuite.describe("Check Zulu Seconds").assertEqualsInteger(20, dateObj.Seconds)
+    Catch
+        Call testSuite.addError("Error " & Error() & " on line " & Erl(), GetThreadInfo(12))
+        Print GetThreadInfo(12)
+        Print "Error " & Error() & " on line " & Erl()
+    End Try
+
+    Try
+        Set dateObj = parseISOOffsetDateString()
+        Call testSuite.describe("Check Offset Year").assertEqualsInteger(2023, dateObj.Year)
+        Call testSuite.describe("Check Offset Month").assertEqualsInteger(8, dateObj.Month)
+        Call testSuite.describe("Check Offset Day").assertEqualsInteger(15, dateObj.Day)
+        Call testSuite.describe("Check Offset Hour").assertEqualsInteger(9, dateObj.Hours)
+        Call testSuite.describe("Check Offset Minutes").assertEqualsInteger(50, dateObj.Minutes)
+        Call testSuite.describe("Check Offset Seconds").assertEqualsInteger(20, dateObj.Seconds)
+    Catch
+        Call testSuite.addError("Error " & Error() & " on line " & Erl(), GetThreadInfo(12))
+        Print GetThreadInfo(12)
+        Print "Error " & Error() & " on line " & Erl()
+    End Try
+
+    Try
+        Set dateObj = parseDateFormat(False)
+        Call testSuite.describe("Check Simple Format Year").assertEqualsInteger(2023, dateObj.Year)
+        Call testSuite.describe("Check Simple Format Month").assertEqualsInteger(8, dateObj.Month)
+        Call testSuite.describe("Check Simple Format Day").assertEqualsInteger(15, dateObj.Day)
+        Call testSuite.describe("Check Simple Format Hour").assertEqualsInteger(2, dateObj.Hours)
+        Call testSuite.describe("Check Simple Format Minutes").assertEqualsInteger(50, dateObj.Minutes)
+        Call testSuite.describe("Check Simple Format Seconds").assertEqualsInteger(20, dateObj.Seconds)
+    Catch
+        Call testSuite.addError("Error " & Error() & " on line " & Erl(), GetThreadInfo(12))
+        Print GetThreadInfo(12)
+        Print "Error " & Error() & " on line " & Erl()
+    End Try
+
+    Try
+        Set dateObj = parseDateFormat(True)
+        Call testSuite.describe("Check Simple Format Year").assertEqualsInteger(2023, dateObj.Year)
+        Call testSuite.describe("Check Simple Format Month").assertEqualsInteger(8, dateObj.Month)
+        Call testSuite.describe("Check Simple Format Day").assertEqualsInteger(15, dateObj.Day)
+        Call testSuite.describe("Check Simple Format Hour").assertEqualsInteger(2, dateObj.Hours)
+        Call testSuite.describe("Check Simple Format Minutes").assertEqualsInteger(50, dateObj.Minutes)
+        Call testSuite.describe("Check Simple Format Seconds").assertEqualsInteger(20, dateObj.Seconds)
+    Catch
+        Call testSuite.addError("Error " & Error() & " on line " & Erl(), GetThreadInfo(12))
+        Print GetThreadInfo(12)
+        Print "Error " & Error() & " on line " & Erl()
+    End Try
+
+    Try
+        Call testSuite.describe("Check convert date to string format 1").assertEqualsString("2023-02-20 20:49:13 UTC", toStringFormatTypeLocale(1, ""), False)
+        Call testSuite.describe("Check convert date to string format 2").assertEqualsString("2023-02-20 20:49:13 UTC", toStringFormatTypeLocale(2, ""), False)
+    Catch
+        Call testSuite.addError("Error " & Error() & " on line " & Erl(), GetThreadInfo(12))
+        Print "Error " & Error() & " on line " & Erl()
+    End Try
+    
+End Sub

@@ -1,0 +1,71 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+Use "../libs/VoltScriptTesting"
+Use "../libs/stream_zip"
+UseVSE "*OSUtilsVSE"
+
+Sub Initialize
+
+    Dim OSUtils as New OSUtils()
+    Dim stream as New Stream()
+    Dim dirPath as String
+    Dim mainDirPath as String
+    Dim testRunner as New TestRunner("Test ZIP")
+    Dim testSuite as New TestSuite("Test zip files")
+    Call testRunner.addTestSuite(testSuite)
+
+    mainDirPath = CurDir
+    dirPath = CurDir & "/zipTemp"
+    Call OSUtils.makeDirectories(dirPath)
+    Call createOpenFile(stream, dirPath & "/test1.txt")
+    Call writeToFile(stream, "Hello world")
+    Call stream.close
+    Call createOpenFile(stream, dirPath & "/test2.txt")
+    Call writeToFile(stream, "Hello world")
+    Call stream.close
+
+    Dim za as ZipArchive
+
+    Set za = createZipAdd(dirPath)
+    Call testSuite.describe("Test zip1 created successfully").assertTrue(Not za is Nothing)
+    Call testSuite.describe("Test zip1 contains two files").assertEqualsLong(2, za.entryCount)
+    Call za.closeArchive()
+
+    Set za = createZipSpec(dirPath)
+    Call testSuite.describe("Test zip2 created successfully").assertTrue(Not za is Nothing)
+    Call testSuite.describe("Test zip2 contains two files").assertEqualsLong(2, za.entryCount)
+    Call za.closeArchive()
+
+    Set za = createZipArray(dirPath)
+    Call testSuite.describe("Test zip3 created successfully").assertTrue(Not za is Nothing)
+    Call testSuite.describe("Test zip3 contains two files").assertEqualsLong(2, za.entryCount)
+    Call za.closeArchive()
+
+    Call OSUtils.makeDirectories(dirPath & "/zip1")
+    Call extractZip(dirPath)
+    Call testSuite.describe("Test zip1 directory created").assertTrue(OSUtils.isDirectory(dirPath &"/zip1"))
+    Call testSuite.describe("Test test1.txt extracted").assertTrue(OSUtils.isFile(dirPath &"/zip1/test1.txt"))
+    Call testSuite.describe("Test test2.txt extracted").assertTrue(OSUtils.isFile(dirPath &"/zip1/test2.txt"))
+
+    Call OSUtils.makeDirectories(dirPath & "/zip2")
+    Call extractZipEachFile(dirPath)
+    Call testSuite.describe("Test zip1 directory created").assertTrue(OSUtils.isDirectory(dirPath &"/zip2"))
+    Call testSuite.describe("Test test1.txt extracted").assertTrue(OSUtils.isFile(dirPath &"/zip2/test1.txt"))
+    Call testSuite.describe("Test test2.txt extracted").assertTrue(OSUtils.isFile(dirPath &"/zip2/test2.txt"))
+    ChDir mainDirPath
+End Sub

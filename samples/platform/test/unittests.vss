@@ -1,0 +1,43 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+Use "../libs/envVars"
+Use "../libs/VoltScriptTesting"
+
+Sub Initialize
+
+    Dim OSUtils as New OSUtils
+    Dim tradDir as String
+    Dim osDir as String
+    Dim osProp as String
+    Dim testRunner as New TestRunner("Test OS")
+    Dim testSuite as New TestSuite("Environment Variables")
+    Call testRunner.addTestSuite(testSuite)
+
+    tradDir = getHomeDirTraditional()
+    osDir = getHomeDirOSEnvironment()
+    osProp = getHomeDirOSProperty()
+
+    Call testSuite.describe("Check home dir using GetThreadInfo and OSUtils.Platform match")._
+        assertEqualsString(tradDir, osDir, False)
+    Call testSuite.describe("Check home dir using GetThreadInfo and OSUtils.HomeDir match")._
+        assertEqualsString(tradDir, osProp, false)
+    Call testSuite.describe("Check temp directory not blank").assertNotEqualString("", getTempDir)
+    Call setEnvironmentVariable()
+    Call testSuite.describe("Check environment variable set").assertEqualsString("Hello World", Environ$("VOLTSCRIPT_HELLO"), False)
+
+End Sub

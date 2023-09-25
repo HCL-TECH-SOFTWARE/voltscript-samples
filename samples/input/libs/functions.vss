@@ -1,0 +1,68 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+UseVSE "*StreamVSE"
+
+%REM
+	Echoes the user's message until the user entere's "q" or "quit"
+%END REM
+Sub echoMessagesUntilQuit()
+    Dim pipestream as New Stream()
+	Dim continue as Boolean
+	Dim data as String
+
+	Call pipestream.open("", "STDIO")
+	continue = true
+	Call pipeStream.writeText("Enter quit or q to end interaction", EOL_LF)
+	Do While Continue
+    	data = pipeStream.readText(true, 4, 5)
+		Select Case data
+		Case "quit", "q":
+			continue = False
+		Case "":
+			Call pipeStream.writeText("I didn't head anything", EOL_LF)
+		Case Else:
+			Call pipeStream.writeText("You entered: " & data, EOL_LF)
+		End Select
+	Loop
+	Call pipeStream.close()
+	Print "Thank you"
+End Sub
+
+%REM
+	Echoes the user's message until the user ends the stream (Ctrl + D).
+	NOTE: This time we use Print instead of .writeText - Print automatically appends a line feed
+%END REM
+Sub echoMessagesUntilEOS()
+	Dim pipestream as New Stream()
+	Dim continue as Boolean
+	Dim data as String
+
+	Call pipestream.open("", "STDIO")
+	Print "Press Ctrl + D to end interaction"
+	Do While Not pipeStream.isEOS
+		data = pipeStream.readText(true, 4, 5)
+		Select Case data
+		Case "":
+			Print "I didn't head anything"
+		Case Else:
+			Print "You entered: " & data
+		End Select
+	Loop
+	Call pipeStream.close()
+	Print "Thank you"
+End Sub

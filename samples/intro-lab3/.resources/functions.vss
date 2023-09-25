@@ -1,0 +1,49 @@
+Option Declare
+Option Public
+
+UseVSE "*JsonVSE"
+Use "../libs/VoltScriptJsonConverter"
+
+Class Person
+
+    Public firstName as String
+    Public lastName as String
+    Public email as String
+    Public gender as String
+
+    Function getName as String
+        Return firstName & " " & lastName
+    End Function
+
+End Class
+
+Function mainFunction(data as String) as JsonObject
+    Dim jsonParser as New JsonParser
+        Dim root as JsonObject
+        Dim response as New JsonObject
+        Dim responseObj as New JsonObject
+        Dim helper as New JsonConversionHelper
+        Dim people as Variant
+        Dim i as Integer
+
+        Try
+            Call jsonParser.loadFromJson(data)
+        Catch
+            Error 1400, "Invalid input: not valid JSON"
+        End Try
+
+        Set root = jsonParser.getRootObject()
+        Try
+            people = helper.ignoreLabel("id")._
+                jsonArrayToObjects(root, "Person", "../libs/functions")
+            For i = 0 to UBound(people)
+                ' people(i) is a Variant, so no compile-error will be thrown if getName() is spelled wrong!
+                ' Best practice is to cast to a Person first.
+                Call responseObj.insertValue("name", people(i).getName())
+                Call response.appendToJsonArray(responseObj)
+            Next
+            Return response
+        Catch
+            Error 1400, "Cannot convert people: " & Error() & " on line " & Erl()
+        End Try
+End Function

@@ -1,0 +1,58 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+Use "../libs/stream_zip.vss"
+Use "../libs/VoltScriptTesting"
+UseVSE "*OSUtilsVSE"
+
+Sub Initialize
+
+    Dim testRunner as New TestRunner("Test reading and writing files")
+    Dim testSuite as New TestSuite("Test writing file")
+    Call testRunner.addTestSuite(testSuite)
+
+    Dim OSUtils as New OSUtils()
+    Dim stream as New Stream()
+    Dim dirPath as String
+    Dim filePath as String
+    Dim actual as String
+    Dim expected as String
+    dirPath = CurDir & "/streamtemp"
+    Call OSUtils.makeDirectories(dirPath)
+    filePath = dirPath & "/testFile.txt"
+
+    Call testSuite.describe("Test creating file").assertTrue(createOpenFile(stream, filePath))
+    Call writeToFile(stream, "Hello World")
+    Call stream.close
+
+    expected = "Hello World" & Chr(10) & Chr(10)
+    Call createOpenFile(stream, filePath)
+    actual = readFromFile(stream)
+    Call testSuite.describe("Test reading file line by line").assertEqualsString(expected, actual, True)
+    Call stream.close
+
+    Call createOpenFile(stream, filePath)
+    actual = readWholeFile(stream)
+    Call testSuite.describe("Test reading file complete").assertEqualsString(expected, actual, True)
+    Call stream.close
+
+    If testSuite.ranSuccessfully() Then
+        Kill filePath
+        Call OSUtils.removeDir(dirPath, true)
+    End If
+
+End Sub

@@ -1,0 +1,95 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+Use "../libs/functions.vss"
+Use "../libs/VoltScriptTesting"
+
+Sub Initialize
+    Dim TestRunner as New TestRunner("HashVSE tests")
+    Dim testSuite as New TestSuite("Hash tests")
+    Dim tempStr as String
+    Dim baseByteArr as Variant
+    Dim tempByteArr as Variant
+    Dim output1 as String
+    Dim output256 as String
+    Dim output512 as String
+    Dim output1B as Variant
+    Dim output256B as Variant
+    Dim output512B as Variant
+    Dim expected as String
+    Call testRunner.addTestSuite(testSuite)
+
+    Try
+        tempStr = base64Encode(jsonStr)
+        Call testSuite.describe("Test Base64 encoding").assertEqualsString(base64Str, tempStr, True)
+        Call testSuite.describe("Test Base64 decoding").assertEqualsString(jsonStr, base64Decode(tempStr), True)
+
+        baseByteArr = convertStringToBytes(jsonStr)
+        Call testSuite.describe("Test string-to-bytes is array").assertIs("BYTE( )", baseByteArr)
+        tempStr = base64ByteEncode(baseByteArr)
+        Call testSuite.describe("Test base64 byte encoding").assertEqualsString(base64Str, tempStr, True)
+        tempByteArr = base64ByteDecode(tempStr)
+        Call testSuite.describe("Test base64 byte decoding is array").assertIs("BYTE( )", tempByteArr)
+        Call testSuite.describe("Test base64 round-trip conversion to string").assertEqualsString(jsonStr,_
+            convertBytesToString(tempByteArr), True)
+
+        Call convertSHA(hashStartStr, output1, output256, output512)
+        Call testSuite.describe("Test SHA1 different to SHA256").assertNotEqualString(output1, output256)
+        Call testSuite.describe("Test SHA256 different to SHA512").assertNotEqualString(output256, output512)
+        tempByteArr = convertStringToBytes(hashStartStr)
+        Call convertSHABytes(tempByteArr, output1B, output256B, output512B)
+        Dim hu as New HashUtilities()
+        Call testSuite.describe("Test SHA1 and SHA1B").assertEqualsString(output1,_
+            hu.bytesToString(output1B, True), True)
+        Call testSuite.describe("Test SHA256 and SHA256B").assertEqualsString(output256,_
+            hu.bytesToString(output256B, True), True)
+        Call testSuite.describe("Test SHA512 and SHA512B").assertEqualsString(output512,_
+            hu.bytesToString(output512B, True), True)
+
+        expected = "1069e938d08e97e5e12edac8cde40687"
+        Call testSuite.describe("Convert string to MD5 hash").assertEqualsString(expected,_
+            convertMD5(hashStartStr), True)
+        Call testSuite.describe("Convert string to MD5 hash").assertEqualsString(expected,_
+            hu.bytesToString(convertMD5Bytes(hu.stringToBytes(hashStartStr)), True), True)
+        Call testSuite.describe("Convert string to MD5 hash").assertEqualsString(expected,_
+            convertFileMD5(), True)
+        Call testSuite.describe("Convert string to MD5 hash").assertEqualsString(expected,_
+            hu.bytesToString(convertFileMD5Bytes(), True), True)
+    Catch
+        Print "Error " & Error() & " on line " & Erl()
+    End Try
+
+    Dim cryptoSuite as New TestSuite("Crypto Tests")
+    Dim iv as Variant
+    Dim key128 as Variant
+    Dim key256 as Variant
+    Dim basePath as String
+    Call testRunner.addTestSuite(cryptoSuite)
+    Call initializeForAES(iv, key128, key256)
+    Call cryptoSuite.describe("Check initialization vector is byte array").assertIs("BYTE( )", iv)
+    Call cryptoSuite.describe("Check 128 AES key is byte array").assertIs("BYTE( )", key128)
+    Call cryptoSuite.describe("Check 256 AES key is byte array").assertIs("BYTE( )", key256)
+    basePath = CurDir & "/samples/lorem"
+    Call encryptFile(basePath & ".txt", basePath & "128.txt", iv, key128)
+    Call encryptFile(basePath & ".txt", basePath & "256.txt", iv, key256)
+    Call cryptoSuite.describe("Check encrypted files are different")._
+        assertNotEqualString(hu.FileMD5(basePath & "128.txt"), hu.FileMD5(basePath & "256.txt"))
+    Call decryptFile(basePath & "128.txt", basePath & "128out.txt", iv, key128)
+    Call decryptFile(basePath & "256.txt", basePath & "256out.txt", iv, key256)
+    Call cryptoSuite.describe("Check decrypted files are different")._
+        assertEqualsString(hu.FileMD5(basePath & "128out.txt"), hu.FileMD5(basePath & "256out.txt"), True)
+End Sub
