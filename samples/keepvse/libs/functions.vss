@@ -22,7 +22,7 @@ UseVSE "*JsonVSE"
     Set these for your Domino REST API environment.
     Server_Name in format http(s)://www.myServerName.com/api/v1
 %END REM
-Const SERVER_NAME = "https://keep.sage.fnxlabs.com/api/v1"
+Const SERVER_NAME = ""
 Const USERNAME_ENVVAR = "KEEP_USERNAME"
 Const USERPASSWORD_ENVVAR = "KEEP_PASSWORD"
 

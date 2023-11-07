@@ -35,9 +35,17 @@ Sub Initialize
     Set resp = makeJsonRequest()
     Call testSuite.describe("Check JSON return code").assertEqualsInteger(418, resp.responseCode)
     Call testSuite.describe("Check content type is JSON").assertEqualsString("application/json", resp.ContentType, True)
-    Call parser.loadFromJson(StrLeft(resp.ContentBody, Chr(10)))
-    Set jsonObj = parser.getRootObject
-    Call testSuite.describe("Check description is I'm a teapot").assertEqualsString("I'm a teapot", jsonObj.getChild("description").scalarValue, true)
+    Try
+        Call testSuite.describe("Check parsing JSON")
+        Call parser.loadFromJson(resp.ContentBody)
+        Call testSuite.addResult(true, "")
+    Catch
+        Call testSuite.addError("Error " & Error() & " on line " & Erl(), resp.ContentBody)
+    End Try
+    If (Not jsonObj is Nothing) Then
+        Set jsonObj = parser.getRootObject
+        Call testSuite.describe("Check description is I'm a teapot").assertEqualsString("I'm a teapot", CStr(jsonObj.getChild("description").scalarValue), true)
+    End If
 
     Dim newServer as New WebServer
     Set resp = makeRequestFromUrlBuilder(newServer)

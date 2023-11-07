@@ -69,7 +69,7 @@ Sub Initialize
         jsonObj.getChildren()(2).toString(false), true)
 
     Set jsonObj = modifyChild()
-    Call testSuite.describe("Test jsonObj has elem1").assertTrue(jsonObj.isChild("elem1"))
+    Call testSuite.describe("Test jsonObj has elem1").assertTrue(jsonObj.getChild("child").isChild("elem1"))
     Call testSuite.describe("Test jsonObj does not have elem2").assertFalse(jsonObj.isChild("elem2"))
 
 End Sub

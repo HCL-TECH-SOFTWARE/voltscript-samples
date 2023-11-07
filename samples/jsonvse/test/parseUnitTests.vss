@@ -35,7 +35,7 @@ Sub Initialize
     Call testSuite.describe("Check jsonObj is object").assertTrue(jsonObj.isObject)
     Call testSuite.describe("Check age is scalar").assertTrue(jsonObj.getChild("age").isScalar)
     Call testSuite.describe("Check labels sorted alphabetically").assertEqualsString("age", jsonObj.getChildren()(0).Label, true)
-    Call testSuite.describe("Check firstName").assertEqualsString("John", jsonObj.getChild("firstName").scalarValue, True)
+    Call testSuite.describe("Check firstName").assertEqualsString("John", CStr(jsonObj.getChild("firstName").scalarValue), True)
     Set children = jsonObj.getChild("children")
     Call testSuite.describe("Check children is array").assertTrue(children.isArray)
     Call testSuite.describe("Check children has two values").assertEqualsInteger(2, children.childCount)
