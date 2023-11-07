@@ -30,7 +30,7 @@ Sub Initialize
     Dim testString as String
     Dim resultString as String
     testString = "target=https://httpstat.us"
-    resultString = "target%3Dhttps%3A%2F%2Fhttpstat.us"
+    resultString = "target=https://httpstat.us"
     Call testSuite.describe("Test URL encoding matches").assertEqualsString(resultString, server.URLencode(testString), True)
     Call testSuite.describe("Test URL decoding matches").assertEqualsString(testString, server.URLdecode(resultString), True)
 
@@ -42,5 +42,5 @@ Sub Initialize
     json = |{"code":418,"description":"I'm a teapot"}|
     Set jsonObj = parseResponse(json)
     Call testSuite2.describe("Test code is 418").assertEqualsInteger(418, CInt(jsonObj.getChild("code").scalarValue))
-    Call testSuite2.describe("Test description is I'm a teapot").assertEqualsString("I'm a teapot", jsonObj.getChild("description").scalarValue, True)
+    Call testSuite2.describe("Test description is I'm a teapot").assertEqualsString("I'm a teapot", CStr(jsonObj.getChild("description").scalarValue), True)
 End Sub

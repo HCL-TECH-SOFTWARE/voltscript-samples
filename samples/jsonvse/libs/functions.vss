@@ -89,8 +89,8 @@ End Sub
     But because childObj was deep-copied, the version in parent was a snapshot at that time
 %END REM
 Function modifyChild() as JsonObject
-    Dim parent as JsonObject
-    Dim childObj as JsonObject
+    Dim parent as New JsonObject
+    Dim childObj as New JsonObject
     Call childObj.insertValue("elem1","hello world")
     childObj.label = "child"
 
