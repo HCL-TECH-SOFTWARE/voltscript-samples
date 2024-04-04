@@ -1,0 +1,44 @@
+{
+    "name": "xml-samples",
+    "description": "HCL VoltScript XML Samples",
+    "license": "Apache 2.0",
+    "authors": [
+        "Jomary Padilla"
+    ],
+    "version":"1.0.0",
+    "mainScripts": [
+        "main.vss"
+    ],
+    "sourceDir": "src",
+    "testDir": "test",
+    "vsesDir": "vses",
+    "libsDir": "libs",
+    "repositories": [
+        {
+            "id": "volt-mx-marketplace",
+            "type": "marketplace",
+            "url": "https://community.demo-hclvoltmx.com/marketplace/asset"
+        },
+        {
+            "id": "hcl-github",
+            "type": "github",
+            "url": "https://api.github.com/repos/HCL-TECH-SOFTWARE"
+        }
+    ],
+    "dependencies": [
+        {
+            "library": "voltscript-testing",
+            "version": "1.0.1",
+            "module": "VoltScriptTesting.vss",
+            "repository": "hcl-github"
+        }
+    ],
+    "vseDependencies": {
+        "XMLVSE": {
+            "library": "",
+            "version": "",
+            "module": "",
+            "repository":"volt-mx-marketplace"
+        }
+    }
+}

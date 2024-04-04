@@ -1,0 +1,4 @@
+libs/VoltScriptTesting.vss
+vses/*
+Unit-test-reports/*
+core

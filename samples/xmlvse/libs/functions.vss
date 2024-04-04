@@ -1,0 +1,89 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+UseVSE "*XMLVSE"
+
+%REM
+    Builds a XML object with a root tag of Profile and two attributes which are 'version' and 'publish'.
+%END REM
+Function buildXML() as XMLObject
+
+    Dim xmlObj as New XMLObject
+    Call xmlObj.addRootTag("Profile", "")
+    Call xmlObj.addAttribute("version", "1")
+    Call xmlObj.addAttribute("publish", "2024")
+
+    Return xmlObj
+End Function
+
+%REM
+    Adds two children into the XML Object.
+    First Child is added using a string argument
+    Second Child is added using a XMLObject argument
+%END REM
+Function addChildrenXML(xmlObj as XMLObject) as XMLObject
+    
+    Call xmlObj.addChild("Employee", "John Doe")
+
+    Dim ChildObj as New XMLObject
+    Call ChildObj.addRootTag("Position", "Software Engineer")
+
+    Call xmlObj.addChildObject(ChildObj)
+
+    Return xmlObj
+End Function
+
+%REM
+    Removes Elements from the XML Object
+    Second attribute was removed 'publish'
+    First Child is removed using a string argument
+    Second Child is removed using a XMLObject argument
+
+%END REM
+Function removeXMLElements(xmlObj as XMLObject) as XMLObject
+    
+    Call xmlObj.removeAttribute("publish")
+    Call xmlObj.removeChild("Employee")
+
+    Dim ChildObj as New XMLObject
+    Set ChildObj = xmlObj.getChild("Position")
+    Call xmlObj.removeChildObject(ChildObj)
+
+    Return xmlObj
+End Function
+
+%REM
+    Parses the provided string and pass it into an XML Object
+%END REM
+Function parseXMLString(stringXML as String) as XMLParser
+    
+    Dim parser as New XMLParser
+    Call parser.loadFromXML(stringXML)
+
+    Return parser
+End Function
+
+%REM
+    Parses the file from the provided path and pass it into an XML Object
+%END REM
+Function parseXMLFile(path as String) as XMLParser
+    
+    Dim parser as New XMLParser
+    Call parser.loadFromFile(path)
+
+    Return parser
+End Function
