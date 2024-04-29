@@ -39,20 +39,20 @@
     "vseDependencies": {
         "OSUtilsVSE": {
             "library": "25282",
-            "version": "1.0.0",
-            "module": "25281/19404",
-            "repository":"volt-mx-marketplace"
+            "version": "1.0.1",
+            "module": "25886/20852",
+            "repository": "volt-mx-marketplace"
         },
         "ZipVSE": {
             "library": "25288",
-            "version": "1.0.0",
-            "module": "25287/19410",
-            "repository":"volt-mx-marketplace"
+            "version": "1.0.1",
+            "module": "25890/20854",
+            "repository": "volt-mx-marketplace"
         },
         "StreamVSE": {
             "library": "25284",
-            "version": "1.0.0",
-            "module": "25283/19424",
+            "version": "1.0.1",
+            "module": "25878/20842",
             "repository": "volt-mx-marketplace"
         }
     }

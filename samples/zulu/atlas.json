@@ -36,8 +36,8 @@
     "vseDependencies": {
         "ZuluVSE": {
             "library": "25290",
-            "version": "1.0.0",
-            "module": "25289/19412",
+            "version": "1.0.1",
+            "module": "25891/20855",
             "repository":"volt-mx-marketplace"
         }
     }

@@ -38,15 +38,15 @@
     "vseDependencies": {
         "StreamVSE": {
             "library": "25284",
-            "version": "1.0.0",
-            "module": "25283/19424",
+            "version": "1.0.1",
+            "module": "25878/20842",
             "repository": "volt-mx-marketplace"
         },
         "ContextVSE": {
             "library": "25276",
-            "version": "1.0.0",
-            "module": "25275/19398",
-            "repository":"volt-mx-marketplace"
+            "version": "1.0.1",
+            "module": "25880/20848",
+            "repository": "volt-mx-marketplace"
         }
     }
 }

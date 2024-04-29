@@ -37,8 +37,8 @@
     "vseDependencies": {
         "JsonVSE": {
             "library": "25265",
-            "version": "1.0.0",
-            "module": "25264/19416",
+            "version": "1.0.1",
+            "module": "25877/20841",
             "repository":"volt-mx-marketplace"
         }
     }

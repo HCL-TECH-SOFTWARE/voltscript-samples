@@ -15,7 +15,7 @@
 Option Declare
 Option Public
 
-Use "../libs/functions.vss"
+Use "../libs/functions"
 Use "../libs/VoltScriptTesting"
 
 Sub Initialize

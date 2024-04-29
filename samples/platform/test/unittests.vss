@@ -38,6 +38,6 @@ Sub Initialize
         assertEqualsString(tradDir, osProp, false)
     Call testSuite.describe("Check temp directory not blank").assertNotEqualString("", getTempDir)
     Call setEnvironmentVariable()
-    Call testSuite.describe("Check environment variable set").assertEqualsString("Hello World", Environ$("VOLTSCRIPT_HELLO"), False)
+    Call testSuite.describe("Check environment variable set").assertEqualsString("Hello World", OSUtils.getEnvironment("VOLTSCRIPT_HELLO"), False)
 
 End Sub

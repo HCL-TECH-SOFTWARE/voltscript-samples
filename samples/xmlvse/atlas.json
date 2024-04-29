@@ -35,10 +35,10 @@
     ],
     "vseDependencies": {
         "XMLVSE": {
-            "library": "",
-            "version": "",
-            "module": "",
-            "repository":"volt-mx-marketplace"
+            "library": "25893",
+            "version": "1.0.0",
+            "module": "25892/20856",
+            "repository": "volt-mx-marketplace"
         }
     }
 }

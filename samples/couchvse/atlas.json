@@ -26,8 +26,8 @@
     "vseDependencies": {
         "CouchVSE": {
             "library": "25292",
-            "version": "1.0.0",
-            "module": "25291/19425"   
+            "version": "1.0.1",
+            "module": "25881/20849"   
         }
     }
 }

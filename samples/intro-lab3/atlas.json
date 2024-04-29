@@ -34,7 +34,7 @@
         },
         {
             "library": "voltscript-json-converter",
-            "version": "1.0.0",
+            "version": "1.0.2",
             "module": "VoltScriptJsonConverter.vss",
             "repository": "hcl-github"
         }
@@ -42,8 +42,8 @@
     "vseDependencies": {
         "StreamVSE": {
             "library": "25284",
-            "version": "1.0.0",
-            "module": "25283/19424",
+            "version": "1.0.1",
+            "module": "25878/20842",
             "repository": "volt-mx-marketplace"
         }
     }

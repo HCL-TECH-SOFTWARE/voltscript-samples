@@ -1,31 +1,37 @@
 {
-    "name": "web-samples",
+    "name": "foundry-samples",
     "authors": [
         "Paul Withers"
     ],
-    "description": "HCL VoltScript Web Samples",
+    "description": "Samples for Foundry integration services",
     "license": "Apache 2.0",
     "version": "1.0.0",
     "sourceDir": "src",
+    "testDir": "test",
     "libsDir": "libs",
     "vsesDir": "vses",
-    "testDir": "test",
     "mainScripts": [
         "main.vss"
     ],
     "dependencies": [
         {
             "library": "voltscript-testing",
-            "version": "1.0.1",
-            "module": "VoltScriptTesting.vss"
+            "module": "VoltScriptTesting.vss",
+            "repository": "hcl-github",
+            "version": "1.0.1"
+        },
+        {
+            "library": "voltscript-voltmx-middleware",
+            "module": "VoltMXObjects.vss",
+            "version": "1.0.0"
         }
     ],
     "vseDependencies": {
-        "HashVSE": {
-            "library": "25278",
+        "ContextVSE": {
+            "library": "25276",
             "version": "1.0.1",
-            "module": "25882/20850",
-            "repository":"cascade"
+            "module": "25880/20848",
+            "repository": "volt-mx-marketplace"
         }
     },
     "repositories": [

@@ -36,15 +36,15 @@
     "vseDependencies": {
         "KeepVSE": {
             "library": "25280",
-            "version": "1.0.0",
-            "module": "25279/19402",
-            "repository":"volt-mx-marketplace"
+            "version": "1.0.1",
+            "module": "25844/20851",
+            "repository": "volt-mx-marketplace"
         },
         "JsonVSE": {
             "library": "25265",
-            "version": "1.0.0",
-            "module": "25264/19416",
-            "repository":"volt-mx-marketplace"
+            "version": "1.0.1",
+            "module": "25877/20841",
+            "repository": "volt-mx-marketplace"
         }
     }
 }

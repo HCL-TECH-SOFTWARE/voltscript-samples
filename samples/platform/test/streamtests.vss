@@ -15,7 +15,7 @@
 Option Declare
 Option Public
 
-Use "../libs/stream_zip.vss"
+Use "../libs/stream_zip"
 Use "../libs/VoltScriptTesting"
 UseVSE "*OSUtilsVSE"
 
