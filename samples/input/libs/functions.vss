@@ -53,12 +53,12 @@ Sub echoMessagesUntilEOS()
 	Dim data as String
 
 	Call pipestream.open("", "STDIO")
-	Print "Press Ctrl + D to end interaction"
+	Print "Press CTRL + Z on Windows, Ctrl + D on everything else to end interaction"
 	Do While Not pipeStream.isEOS
 		data = pipeStream.readText(true, 4, 5)
 		Select Case data
 		Case "":
-			Print "I didn't head anything"
+			Print "I didn't hear anything"
 		Case Else:
 			Print "You entered: " & data
 		End Select

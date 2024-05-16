@@ -29,7 +29,7 @@ Sub Initialize
     Set jsonObj = buildJsonObj()
     Call testSuite.describe("Test JSON object has two children").assertEqualsInteger(2, jsonObj.childCount)
     Call testSuite.describe("Test children are re-ordered alphabetically").assertEqualsString("Number", jsonObj.getChildren()(0).Label, False)
-    Call testSuite.describe("Test 'Number' is a a long").assertIs("LONG", jsonObj.getChild("Number").scalarValue)
+    Call testSuite.describe("Test 'Number' is a a double").assertIs("DOUBLE", jsonObj.getChild("Number").scalarValue)
     Call testSuite.describe("Test 'String' is a string").assertIs("STRING", jsonObj.getChild("String").scalarValue)
 
     Set jsonArr = buildJsonArr()

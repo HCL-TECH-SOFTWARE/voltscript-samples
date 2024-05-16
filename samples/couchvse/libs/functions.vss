@@ -127,7 +127,6 @@ Sub PrintCouchDocumentInfo(document as CouchDocument)
 
     Dim attachment as CouchAttachment
 
-    Print |document.DesignType: | & document.DesignType
     Print |document.ID: | & document.ID
     Print |document.isModified: | & document.isModified
     Print |document.isSaved: | & document.isSaved

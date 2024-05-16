@@ -19,7 +19,8 @@ Use "../libs/dir"
 Use "../libs/VoltScriptTesting"
 
 Sub Initialize
-
+    ' NOTE: The Replace() calls in the code below are to standardize on forward slashes ( / ), 
+    ' in case a path with backslashes ( \ ) or a mixture of both is returned.
     Dim OSUtils as New OSUtils
     Dim testRunner as New TestRunner("Test directories and files")
     Dim testSuite as New TestSuite("Test directories and files")
@@ -33,13 +34,19 @@ Sub Initialize
     Dim expected as String
     Dim actual as String
     expected = OSUtils.tempDir & "/foo/bar"
+    expected = Replace(expected, |\|, |/|)
+    Print "expected == " & expected
     actual = buildFooBarPath()
+    actual = Replace(actual, |\|, |/|)
+    Print "actual == " & actual
     Call testSuite.describe("Check PathUtils builds as expected").assertEqualsString(expected, actual, True)
     Call testSuite.describe("Check directory with missing parent does not exist").assertFalse(checkIsDir(actual))
 
     Call testSuite.describe("Check non-existent file in tempDir").assertFalse(checkIsFile(OSUtils.tempDir & "/temp.txt"))
     expected = OSUtils.tempDir & "/foo/test.txt"
+    expected = Replace(expected, |\|, |/|)
     actual = buildFooTestFilePath()
+    actual = Replace(actual, |\|, |/|)
     Call testSuite.describe("Check PathUtils file builds as expected").assertEqualsString(expected, actual, True)
     Call testSuite.describe("Check directory with missing parent does not exist").assertFalse(checkIsFile(actual))
 
