@@ -1,0 +1,56 @@
+{
+    "name": "foundry-lab-domino",           // REQUIRED: Enter a short name for your VoltScript project, e.g. "Demo1"
+    "description": "DRAPI in Foundry Lab",  // REQUIRED: Enter a longer description, e.g. "My first demo project"
+    "displayName": "foundry-lab-domino",  // A longer name to refer to the project, e.g. "Demo 1"
+    "license": "Apache 2.0",    // A license to publish the project under.
+                                // If you want this to be used by others, Apache 2.0 or MIT are recommended
+    "publisher": "HCL America, Inc.",   // Copyright owner
+    "authors": [        // REQUIRED: An array of authors, can be names or emails
+        "YOUR NAME HERE"
+    ],
+    "version":"1.0.0",  // REQUIRED: Current version for this project, used with dependency management to find the modules
+    "sourceDir": "src", // REQUIRED: Directory where mainScripts are located
+    "testDir": "test",  // Directory where unitTestScripts and integrationTestScripts are located
+    "libsDir": "libs",  // Directory where VoltScript Library Modules and shared scripts are located
+    "vsesDir": "vses",  // Directory where VoltScript Extensions are located
+    "mainScripts": [    // REQUIRED: Main scripts with Sub Initialize. Used to sync any additional files between
+                        // sourceDir and testDir, if libsDir not set
+        "populate.vss",
+        "update.vss"
+    ],
+    "repositories": [       // Repositories in which to search for any dependencies
+        {
+            "id": "hcl-github",     // REQUIRED: Unique ID matching "repository" in a dependency in this file.
+                            // Also matches label of a JSON object in atlas-settings, which gives any credentials to use to access this repository
+            "type": "github",   // REQUIRED: Currently "github" or "webserver" are supported
+            "url": "https://api.github.com/repos/HCL-TECH-SOFTWARE" // REQUIRED: Base URL of the repository
+        },
+        {
+            "id": "volt-mx-marketplace",
+            "type": "marketplace",
+            "url": "https://community.hclvoltmx.com/marketplace"
+        }
+    ],
+    "dependencies": [
+        {
+            "library": "voltscript-voltmx-middleware",  // REQUIRED: Folder to be appended to the base URL when dependency management tries to download modules
+            "version": "lates",  // REQUIRED: Version number of modules to download. Currently only supports explicit version or "latest"
+            "module": "VoltMXObjects.vss",   // REQUIRED: Filename of a VoltScript Library Module to download
+            "repository": "hcl-github"
+        },
+        {
+            "library": "voltscript-json-converter",
+            "version": "latest",
+            "module": "VoltScriptJsonConverter.vss",
+            "repository": "hcl-github"
+        }
+    ],
+    "vseDependencies": {    // VoltScript Extension dependencies. NOTE: These also require a label
+        "KeepVSE": {        // REQUIRED: This label will be what you use in "UseVSE" statements
+            "library": "KeepVSE VoltScript Extension",  // REQUIRED: Folder to be appended to the base URL when dependency management tries to download modules
+            "version": "1.0.2",  // REQUIRED: Version number of modules to download. Currently only supports explicit version or "latest"
+            "module": "keepvse",   // REQUIRED: Filename of a VoltScript Library Module to download
+            "repository": "volt-mx-marketplace"
+        }
+    }
+}

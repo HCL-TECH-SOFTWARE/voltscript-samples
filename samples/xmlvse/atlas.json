@@ -17,7 +17,7 @@
         {
             "id": "volt-mx-marketplace",
             "type": "marketplace",
-            "url": "https://community.demo-hclvoltmx.com/marketplace/asset"
+            "url": "https://community.hclvoltmx.com/marketplace"
         },
         {
             "id": "hcl-github",
@@ -35,9 +35,9 @@
     ],
     "vseDependencies": {
         "XMLVSE": {
-            "library": "25893",
-            "version": "1.0.0",
-            "module": "25892/20856",
+            "library": "XMLVSE VoltScript Extension",
+            "version": "1.0.1",
+            "module": "xmlvse",
             "repository": "volt-mx-marketplace"
         }
     }

@@ -1,0 +1,20 @@
+Option Declare
+Option Public
+
+Use "../src/functions"
+
+Sub Initialize() 
+    Dim docs as JsonObject
+    Dim payload as JsonObject
+
+    Try 
+        Set docs = convertJson()
+        Set payload = New JsonObject()
+        Call payload.insertValue("documents", docs)
+
+        Print |Success!|
+        Print |Created | & docs.childCount & | JSON documents.| 
+    Catch
+        Print getErrorInfo(||) 
+    End Try
+End Sub

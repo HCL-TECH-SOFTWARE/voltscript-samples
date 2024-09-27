@@ -22,9 +22,9 @@
     ],
     "vseDependencies": {
         "HashVSE": {
-            "library": "25278",
-            "version": "1.0.1",
-            "module": "25882/20850",
+            "library": "HashVSE VoltScript Extension",
+            "version": "1.0.2",
+            "module": "hashvse",
             "repository":"cascade"
         }
     },
@@ -32,7 +32,7 @@
         {
             "id": "volt-mx-marketplace",
             "type": "marketplace",
-            "url": "https://community.demo-hclvoltmx.com/marketplace/asset"
+            "url": "https://community.hclvoltmx.com/marketplace"
         },
         {
             "id": "hcl-github",

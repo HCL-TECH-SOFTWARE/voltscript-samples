@@ -1,0 +1,65 @@
+Option Declare
+Option Public
+
+Use "../libs/VoltMXObjects"
+Use "../libs/functions"
+UseVSE "*ContextVSE"
+UseVSE "*KeepVSE"
+
+Sub Initialize
+    Dim ctx as New Context()
+    Dim data as String
+    Dim docs as JsonObject
+    Dim scope as KeepScope
+    Dim responseObj as JsonObject
+
+    Dim payload as New JsonObject()
+    Dim server as New KeepServer()
+    Dim parser as new JsonParser()
+
+    Dim response as String
+
+    Dim username as String 
+    Dim password as String 
+
+
+    Try
+        data = ctx.Context
+        Call extractObjects(data, false)
+
+        '****************
+        'START OF FOUNDRY HANDLER
+        '****************
+        server.serverURL = VoltMXRequest.getInputParam("serverURL")
+        username = VoltMXRequest.getInputParam("username")
+        password = VoltMXRequest.getInputParam("password")
+
+        Call server.login(username, password)
+
+        Set scope = server.getScope("companiesandcontacts")
+        Set docs = convertJson()
+        Call payload.insertValue("documents", docs)
+
+        response = scope.bulkCreate(payload.toString(false))
+        Call parser.loadFromJson(response)
+        Set responseObj = parser.getRootObject()
+
+        VoltMxResult.httpStatusCode = 200
+        Call VoltMXResult.result.insertValue("result", responseObj.childCount & " docs created")
+        '****************
+        'END OF FOUNDRY HANDLER
+        '****************
+
+    Catch
+        Call VoltMXResult.setErrorMessage(getErrorMsg("VOLTSCRIPT_CONNECTOR: "))
+    Finally
+        Print VoltMxResult.toJson().toString(false)
+    End Try
+End Sub
+
+Private Function getErrorMsg(prefix as String) as String
+    If (Instr(Error(), "line ") > 0) Then
+        Return Error()
+    End If
+    Return prefix & " ERROR: " & Error() & " (" & Err() & "), line " & Erl()
+End Function

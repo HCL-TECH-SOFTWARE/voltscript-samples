@@ -1,0 +1,103 @@
+Option Public
+Option Declare
+Use "../libs/VoltScriptJsonConverter"
+
+
+Const CLASS_CONTAINER_LIBRARY = |../src/functions|
+
+'**
+' * Represents a company.
+' */
+Class Company
+    Public company as String
+    Public address as String
+    Public contacts as Variant
+
+    Sub addToJsonArray(jsonArr as JsonObject)
+        Dim mainDoc as New JsonObject()
+        Dim childDoc as JsonObject
+        Call mainDoc.insertValue(|Form|, |Company|)
+        Call mainDoc.insertValue(|Company|, Me.company)
+        Call mainDoc.insertValue(|Address|, me.address)
+        Call jsonArr.appendToJsonArray(mainDoc)
+        ForAll contact in contacts
+            Set childDoc = new JsonObject()
+            Call childDoc.insertValue(|Form|, |Contact|)
+            Call childDoc.insertValue(|Company|, Me.company)
+            Call childDoc.insertValue(|FirstName|, contact.firstName)
+            Call childDoc.insertValue(|LastName|, contact.lastName)
+            Call childDoc.insertValue(|dob|, contact.dob)
+            Call childDoc.insertValue(|Email|, contact.email)
+            Call jsonArr.appendToJsonArray(childDoc)
+        End ForAll
+    End Sub
+End Class
+
+'**
+' * Represents a company.
+' */
+Class Contact
+    Public firstName as String
+    Public lastName as String
+    Public email as String
+    Public dob as String
+    Public company as String
+End Class
+
+%REM 
+    Function convertJson()  
+
+    Reads raw JSON content from a file and converts it to a JsonObject. 
+
+    @return The JsonObject to store the converted JSON content.
+%END REM 
+Function convertJson() as JsonObject 
+
+    Dim result as JsonObject 
+    Dim parser as New JsonParser()
+    Dim helper as New JsonConversionHelper()
+    Dim jsonObj as JsonObject
+    Dim temp as JsonObject
+    Dim company as Company
+    Dim contactConverter as JsonBasicObjectArrayConverter
+
+    Try
+        ' Load file
+        Call parser.loadFromFile(CurDir() & |/src/customercontacts.json|)
+        Set jsonObj = parser.getRootObject()
+
+        ' Instantiate the converter 
+        Set contactConverter = New JsonBasicObjectArrayConverter(|Contact|, CLASS_CONTAINER_LIBRARY)
+
+        ' instantiate the result
+        Set result = new JsonObject(True)
+
+        'Deserialize Customers
+        Call helper.withCustomConverter(|contacts|, contactConverter)
+        ForAll child in jsonObj.getChildren()
+            Set temp = child
+            Set company = helper.toObject(temp, |Company|, CLASS_CONTAINER_LIBRARY).fromJson(temp)
+            Call company.addToJsonArray(result)
+        End ForAll
+
+    Catch
+        Print getErrorInfo(||)
+    End Try
+
+    Return result 
+
+End Function
+
+
+%REM 
+    Function getErrorInfo()  
+
+    Returns a string containing the error information.
+
+    @param additionalinfo Additional information to append to the error message.
+
+    @return The error information.      
+%END REM 
+Function getErrorInfo(additionalinfo As String) as String
+    Return |ERROR | & Err() & |, | & Error$() & |, Method | & getThreadInfo(10) & |(), line | & Erl() & | | & additionalinfo 
+End Function

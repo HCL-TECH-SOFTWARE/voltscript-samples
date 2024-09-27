@@ -1,0 +1,74 @@
+Option Declare
+Option Public
+
+Use "../libs/VoltMXObjects"
+Use "../libs/functions"
+UseVSE "*ContextVSE"
+
+Sub Initialize
+    Dim ctx as New Context()
+    Dim data as String
+    Dim scope as KeepScope
+    Dim doc as KeepDocument
+    Dim companyPayload as JsonObject
+
+    Dim parser as New JsonParser()
+    Dim server as New KeepServer()
+    Dim replaceItems as New JsonObject()
+
+    Dim bulkUpdateResponse as String
+    Dim newCompanyName As String
+    Dim oldCompanyName As String
+    Dim query as String
+    Dim unid as String
+
+    Dim username as String 
+    Dim password as String 
+
+    Try
+        data = ctx.Context
+        Call extractObjects(data, false)
+
+        '****************
+        'START OF FOUNDRY HANDLER
+        '****************
+        unid = VoltMXRequest.getInputParam("unid")
+        newCompanyName = VoltMXRequest.getInputParam("CompanyName")
+        server.serverURL = VoltMXRequest.getInputParam("serverURL")
+        username = VoltMXRequest.getInputParam("username")
+        password = VoltMXRequest.getInputParam("password")
+
+        Set scope = server.getScope("foundrycontacts")
+        Set doc = scope.getDocument(unid, false, false, false, false, "default")
+
+        Call parser.loadFromJson(doc.JsonValue)
+        Set companyPayload = parser.getRootObject()
+        oldCompanyName = companyPayload.getChild("Company").scalarValue
+        Call companyPayload.insertValue("Company", newCompanyName)
+        doc.JsonValue = companyPayload.toString(false)
+        Call VoltMxResult.result.insertValue("companyUpdated", doc.save("", "default"))
+
+        query = "Form = 'Contact' and Company = '" & oldCompanyName & "'"
+        Call replaceItems.insertValue("Company", newCompanyName)
+        bulkUpdateResponse = scope.bulkUpdate(query, 0, True, replaceItems.toString(false), "default", False)
+        Call parser.loadFromJson(bulkUpdateResponse)
+        VoltMxResult.httpStatusCode = 200
+        Call VoltMxResult.result.insertValue("contactsUpdated", parser.getRootObject())
+        
+        '****************
+        'END OF FOUNDRY HANDLER
+        '****************
+
+    Catch
+        Call VoltMXResult.setErrorMessage(getErrorMsg("VOLTSCRIPT_CONNECTOR: "))
+    Finally
+        Print VoltMxResult.toJson().toString(false)
+    End Try
+End Sub
+
+Private Function getErrorMsg(prefix as String) as String
+    If (Instr(Error(), "line ") > 0) Then
+        Return Error()
+    End If
+    Return prefix & " ERROR: " & Error() & " (" & Err() & "), line " & Erl()
+End Function

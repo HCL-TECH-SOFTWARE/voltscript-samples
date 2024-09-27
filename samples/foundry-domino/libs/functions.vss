@@ -1,0 +1,60 @@
+Option Public
+Option Declare
+Use "../libs/VoltMXObjects"
+Use "../libs/VoltScriptJsonConverter"
+UseVSE "*KeepVSE"
+
+'**
+' * Represents a company.
+' */
+Class Company
+    Public company as String
+    Public address as String
+    Public contacts as Variant
+
+    Sub addToJsonArray(jsonArr as JsonObject)
+        Dim mainDoc as New JsonObject()
+        Dim childDoc as JsonObject
+        Call mainDoc.insertValue("Form", "Company")
+        Call mainDoc.insertValue("Company", Me.company)
+        Call mainDoc.insertValue("Address", me.address)
+        Call jsonArr.appendToJsonArray(mainDoc)
+
+        ForAll contact in contacts
+            Set childDoc = new JsonObject()
+            Call childDoc.insertValue("Form", "Contact")
+            Call childDoc.insertValue("Company", Me.company)
+            Call childDoc.insertValue("FirstName", contact.firstName)
+            Call childDoc.insertValue("LastName", contact.lastName)
+            Call childDoc.insertValue("dob", contact.dob)
+            Call childDoc.insertValue("Email", contact.email)
+            Call jsonArr.appendToJsonArray(childDoc)
+        End ForAll
+    End Sub
+End Class
+
+Function convertJson() as Variant
+
+    Dim parser as New JsonParser()
+    Dim jsonObj as JsonObject
+    Dim temp as JsonObject
+    Dim docs as New JsonObject(True)
+    Dim company as Company
+    Dim helper as New JsonConversionHelper()
+    Dim contactConverter as New JsonBasicObjectArrayConverter("Contact", "../libs/functions.vss")
+
+    ' Load file
+    Call parser.loadFromFile(PROJECT_DIR & "/src/dummydata.json")
+    Set jsonObj = parser.getRootObject()
+
+    'Deserialize Customers
+    Call helper.withCustomConverter("contacts", contactConverter)
+    ForAll child in jsonObj.getChildren()
+        Set temp = child
+        Set company = helper.toObject(temp, "Company", "../libs/functions.vss").fromJson(temp)
+        Call company.addToJsonArray(docs)
+    End ForAll
+
+    Return docs
+    
+End Function

@@ -20,7 +20,7 @@
         {
             "id": "volt-mx-marketplace",
             "type": "marketplace",
-            "url": "https://community.demo-hclvoltmx.com/marketplace/asset"
+            "url": "https://community.hclvoltmx.com/marketplace"
         },
         {
             "id": "hcl-github",
@@ -38,21 +38,21 @@
     ],
     "vseDependencies": {
         "OSUtilsVSE": {
-            "library": "25282",
-            "version": "1.0.1",
-            "module": "25886/20852",
+            "library": "OSUtils VoltScript Extension",
+            "version": "1.0.2",
+            "module": "osutilsvse",
             "repository": "volt-mx-marketplace"
         },
         "ZipVSE": {
-            "library": "25288",
-            "version": "1.0.1",
-            "module": "25890/20854",
+            "library": "ZipVSE VoltScript Extension",
+            "version": "1.0.2",
+            "module": "zipvse",
             "repository": "volt-mx-marketplace"
         },
         "StreamVSE": {
-            "library": "25284",
-            "version": "1.0.1",
-            "module": "25878/20842",
+            "library": "StreamVSE VoltScript Extension",
+            "version": "1.0.2",
+            "module": "streamvse",
             "repository": "volt-mx-marketplace"
         }
     }

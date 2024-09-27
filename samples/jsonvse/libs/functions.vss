@@ -23,7 +23,7 @@ UseVSE "*JsonVSE"
     "String" will be 1.
 %END REM
 Function buildJsonObj() as JsonObject
-    Dim jsonObj as New JsonObject
+    Dim jsonObj as New JsonObject(False)
 
     Call jsonObj.insertValue("String", "One")
     Call jsonObj.insertValue("Number", 2)
@@ -36,7 +36,7 @@ End Function
     Note the order of insertion is retained
 %END REM
 Function buildJsonArr() as JsonObject
-    Dim jsonArr as New JsonObject
+    Dim jsonArr as New JsonObject(True)
 
     Call jsonArr.appendToJsonArray("One")
     Call jsonArr.appendToJsonArray("Two")
@@ -89,8 +89,8 @@ End Sub
     But because childObj was deep-copied, the version in parent was a snapshot at that time
 %END REM
 Function modifyChild() as JsonObject
-    Dim parent as New JsonObject
-    Dim childObj as New JsonObject
+    Dim parent as New JsonObject()
+    Dim childObj as New JsonObject()
     Call childObj.insertValue("elem1","hello world")
     childObj.label = "child"
 

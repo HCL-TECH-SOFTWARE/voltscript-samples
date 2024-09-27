@@ -1,7 +1,7 @@
 {
-    "name": "lab07",
+    "name": "lab03",
     "version": "1.0.0",
-    "description": "Lab Number 7",
+    "description": "Lab Number 3",
     "authors": [
         "Your Name"
     ],
@@ -17,7 +17,7 @@
         {
             "id": "volt-mx-marketplace",
             "type": "marketplace",
-            "url": "https://community.demo-hclvoltmx.com/marketplace/asset"
+            "url": "https://community.hclvoltmx.com/marketplace"
         },
         {
             "id": "hcl-github",
@@ -34,16 +34,16 @@
         },
         {
             "library": "voltscript-json-converter",
-            "version": "1.0.2",
+            "version": "latest",
             "module": "VoltScriptJsonConverter.vss",
             "repository": "hcl-github"
         }
     ],
     "vseDependencies": {
         "StreamVSE": {
-            "library": "25284",
-            "version": "1.0.1",
-            "module": "25878/20842",
+            "library": "StreamVSE VoltScript Extension",
+            "version": "1.0.2",
+            "module": "streamvse",
             "repository": "volt-mx-marketplace"
         }
     }

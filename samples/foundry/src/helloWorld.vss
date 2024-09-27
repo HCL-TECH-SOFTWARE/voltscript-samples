@@ -1,0 +1,35 @@
+Option Declare
+Option Public
+
+Use "../libs/VoltMXObjects"
+UseVSE "*ContextVSE"
+
+Sub Initialize
+    Dim ctx as New Context()
+    Dim data as String
+
+    Try
+        data = ctx.Context
+        Call extractObjects(data, false)
+
+        '****************
+        'START OF FOUNDRY HANDLER
+        '****************
+        Call VoltMxResult.result.insertValue("message", "Hello World!")
+        '****************
+        'END OF FOUNDRY HANDLER
+        '****************
+
+    Catch
+        Call VoltMXResult.setErrorMessage(getErrorMsg("VOLTSCRIPT_CONNECTOR: "))
+    Finally
+        Print VoltMxResult.toJson().toString(false)
+    End Try
+End Sub
+
+Private Function getErrorMsg(prefix as String) as String
+    If (Instr(Error(), "line ") > 0) Then
+        Return Error()
+    End If
+    Return prefix & " ERROR: " & Error() & " (" & Err() & "), line " & Erl()
+End Function

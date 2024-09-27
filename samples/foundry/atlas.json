@@ -1,9 +1,9 @@
 {
-    "name": "foundry-samples",
+    "name": "foundry-lab",
     "authors": [
         "Paul Withers"
     ],
-    "description": "Samples for Foundry integration services",
+    "description": "Simple Hello World Foundry Lab",
     "license": "Apache 2.0",
     "version": "1.0.0",
     "sourceDir": "src",
@@ -11,34 +11,23 @@
     "libsDir": "libs",
     "vsesDir": "vses",
     "mainScripts": [
-        "main.vss"
+        "helloWorld.vss",
+        "helloName.vss"
     ],
     "dependencies": [
         {
-            "library": "voltscript-testing",
-            "module": "VoltScriptTesting.vss",
-            "repository": "hcl-github",
-            "version": "1.0.1"
-        },
-        {
             "library": "voltscript-voltmx-middleware",
-            "module": "VoltMXObjects.vss",
-            "version": "1.0.0"
+            "version": "latest",
+            "module": "VoltMXObjects.vss"
         }
     ],
     "vseDependencies": {
-        "ContextVSE": {
-            "library": "25276",
-            "version": "1.0.1",
-            "module": "25880/20848",
-            "repository": "volt-mx-marketplace"
-        }
     },
     "repositories": [
         {
             "id": "volt-mx-marketplace",
             "type": "marketplace",
-            "url": "https://community.demo-hclvoltmx.com/marketplace/asset"
+            "url": "https://community.hclvoltmx.com/marketplace"
         },
         {
             "id": "hcl-github",

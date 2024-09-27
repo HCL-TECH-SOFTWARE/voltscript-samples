@@ -19,7 +19,7 @@ All other samples have dependencies on VoltScript Extensions and VoltScript Libr
 Dependencies can be found in two locations:
 
 - VoltScript Library Modules are open source and can be found on [HCL's public GitHub organization](https://opensource.hcltechsw.com/volt-mx-go).
-- VoltScript Extensions are closed source and hosted on the [Volt MX Marketplace](https://marketplace.demo-hclvoltmx.com/).
+- VoltScript Extensions are closed source and hosted on the [Volt MX Marketplace](https://marketplace.hclvoltmx.com/).
 
 #### Atlas-settings.json
 

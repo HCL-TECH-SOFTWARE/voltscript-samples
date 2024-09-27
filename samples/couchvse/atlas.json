@@ -18,16 +18,16 @@
         {
             "id": "volt-mx-marketplace",
             "type": "marketplace",
-            "url": "https://community.demo-hclvoltmx.com/marketplace/asset"
+            "url": "https://community.hclvoltmx.com/marketplace"
         }
     ],
     "dependencies": [
     ],
     "vseDependencies": {
         "CouchVSE": {
-            "library": "25292",
-            "version": "1.0.1",
-            "module": "25881/20849"   
+            "library": "CouchVSE VoltScript Extension",
+            "version": "1.0.2",
+            "module": "couchvse"   
         }
     }
 }
