@@ -26,11 +26,13 @@ Sub Initialize
     Dim jsonObj as New JsonObject()
     Dim doc as KeepDocument
 
+    ' IMPORTANT: Add an admin mode to Custom form with deleteAccessFormula set to true
+
     Try
         server.serverURL = SERVER_NAME
         Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
         Set scope = server.getScope("demo")
-
+        ' DRAPI {{serverUrl}}/document/{{unid}}?dataSource={{scope}}&mode=admin, see bruno request deleteDocument
         Call scope.deleteDocumentByID(UNID, "admin")
     Catch
         Print "Error " & Error() & " (" & Err() & ") on line " & Erl()

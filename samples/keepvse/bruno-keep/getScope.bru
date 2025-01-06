@@ -1,0 +1,19 @@
+meta {
+  name: getScope
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{serverUrl}}/scope?dataSource={{scope}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  dataSource: {{scope}}
+}
+
+headers {
+  accept: application/json
+}

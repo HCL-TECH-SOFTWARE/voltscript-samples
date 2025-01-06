@@ -1,0 +1,24 @@
+meta {
+  name: getViewCategorized-1
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{serverUrl}}/lists/CustomersCategorized?dataSource={{scope}}&scope=categories
+  body: none
+  auth: inherit
+}
+
+params:query {
+  dataSource: {{scope}}
+  scope: categories
+}
+
+headers {
+  accept: application/json
+}
+
+script:post-response {
+  bru.setEnvVar("category",res.body[0].Color)
+}

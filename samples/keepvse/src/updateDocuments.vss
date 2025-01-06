@@ -29,7 +29,7 @@ Sub Initialize
         Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
         Set scope = server.getScope("demo")
         Call replaceItems.insertValue("Color", "Maroon")
-
+        ' DRAPI {{serverUrl}}/bulk/update?dataSource={{scope}}, see bruno request updateDocuments
         Print scope.bulkUpdate("form = 'Customer' and Color = 'Red'", 5000, True,_ 
         replaceItems.toString(false), "default", False)
     Catch

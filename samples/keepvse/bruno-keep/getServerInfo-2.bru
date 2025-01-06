@@ -1,0 +1,15 @@
+meta {
+  name: getServerInfo-2
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{serverUrl}}/scopes
+  body: none
+  auth: inherit
+}
+
+headers {
+  accept: application/json
+}

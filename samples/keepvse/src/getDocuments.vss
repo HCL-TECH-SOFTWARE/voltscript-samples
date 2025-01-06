@@ -35,6 +35,7 @@ Sub Initialize
         unids(0) = UNID1
         unids(1) = UNID2
         unids(2) = UNID3
+        ' DRAPI {{serverUrl}}/bulk/unid?dataSource={{scope}}, see bruno request getDocuments
         docs = getDocuments(server, "demo", unids)
         ForAll doc in docs
             Print doc

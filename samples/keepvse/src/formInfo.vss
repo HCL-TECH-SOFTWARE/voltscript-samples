@@ -24,6 +24,7 @@ Sub Initialize
     Dim parser as New JsonParser()
     Dim jsonObj as JsonObject
 
+    ' Parsed from scope response. DRAPI {{serverUrl}}/scope?dataSource={{scope}}, see bruno request getScope
     Try
         server.serverURL = SERVER_NAME
         Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))

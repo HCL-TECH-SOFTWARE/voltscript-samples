@@ -143,6 +143,11 @@ Function updateDocument(server as KeepServer, scopeName as String, unid as Strin
     Call jsonObj.insertValue("Color", "Red")
     doc.JsonValue = jsonObj.toString(False)
     Call doc.save("", "default")
+        
+    Print "Color: " & doc.getValue("Color")
+    Call doc.replaceValue("Color", "Blue")
+    Call doc.save("", "default")
+    Print "New JSON: " & doc.JsonValue
     Return doc
 End Function
 

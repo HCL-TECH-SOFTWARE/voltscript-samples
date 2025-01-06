@@ -1,0 +1,28 @@
+meta {
+  name: getDocument
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{serverUrl}}/document/{{unid1}}?dataSource={{scope}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  dataSource: {{scope}}
+}
+
+headers {
+  accept: application/json
+}
+
+script:pre-request {
+  if (bru.getEnvVar("unids") === "") {
+    console.error("UNIDS not set, run view request!");
+  } else {
+    const unids = bru.getEnvVar("unids");
+    bru.setVar("unid1",unids[0]);
+  }
+}

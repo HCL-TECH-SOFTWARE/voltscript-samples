@@ -25,8 +25,11 @@ Sub Initialize
         server.serverURL = SERVER_NAME
         Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
 
+        ' DRAPI {{serverUrl}}/info, see bruno request getServerInfo-1
         Print "Server Info: " & server.serverInfo
+        ' DRAPI {{serverUrl}}/scopes, see bruno request getServerInfo-2
         Print "Available scopes: " & server.ScopeList
+        ' Corresponds to claims/scope in user's JWT token
         Print "Access Scopes: " & server.accessScopes
     Catch
         Print "Error " & Error() & " on line " & Erl()

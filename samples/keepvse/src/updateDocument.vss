@@ -31,11 +31,17 @@ Sub Initialize
         Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
         Set scope = server.getScope("demo")
 
+        ' DRAPI {{serverUrl}}/document/{{unid}}?dataSource={{scope}}, see bruno request updateDocument
         Set doc = scope.getDocument(UNID)
         Call parser.loadFromJSON(doc.JsonValue)
         Set jsonObj = parser.getRootObject()
         Call jsonObj.insertValue("Color", "Red")
         doc.JsonValue = jsonObj.toString(False)
+        Call doc.save("", "default")
+        
+        Print "Color: " & doc.getValue("Color")
+        Call doc.replaceValue("Color", "Blue")
+        Print "New JSON: " & doc.JsonValue
         Call doc.save("", "default")
     Catch
         Print "Error " & Error() & " on line " & Erl()

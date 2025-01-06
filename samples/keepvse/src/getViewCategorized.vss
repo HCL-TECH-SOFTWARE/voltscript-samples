@@ -28,17 +28,23 @@ Sub Initialize
     Dim jsonObj as JsonObject
     Dim cat(0) as String
 
+    ' IMPORTANT: Requires a categorized view called CustomersCategorized to be added to demo database
+    ' containing Customer documents where the first column is Color field
+    ' and exposed as a List in Domino REST API
+
     Try
         server.serverURL = SERVER_NAME
         Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
         Set scope = server.getScope("demo")
-        ' Requires a categorized view called CustomersCategorized to be added to demo database
-        ' containing Customer documents where the first column is Color field
-        ' and exposed as a List in Domino REST API
+        ' DRAPI {{serverUrl}}/lists/{{viewName}}?dataSource={{scope}}&scope=categories, 
+        ' see bruno request getViewCategorized-1
         categories = scope.getViewCategories(VIEW_NAME, 0)
         Call parser.loadFromJSON(categories)
         Set jsonObj = parser.getRootObject()
-        cat(0) = jsonObj.getChildren()(0).getChildren()(3).scalarValue
+        cat(0) = jsonObj.getChildren()(0).getChildren()(3).scalarValue  ' First category entry, Color element
+
+        ' DRAPI {{serverUrl}}/lists/{{viewName}}?dataSource={{scope}}&category={{category}}&count=1,
+        ' see bruno request getViewCategorized-2
         Call parser.loadFromJSON(scope.getViewEntriesByKey(VIEW_NAME, cat, 1, False))
         Print parser.toString(True)
     Catch

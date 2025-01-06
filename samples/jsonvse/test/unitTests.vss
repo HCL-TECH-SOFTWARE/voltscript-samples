@@ -72,4 +72,24 @@ Sub Initialize
     Call testSuite.describe("Test jsonObj has elem1").assertTrue(jsonObj.getChild("child").isChild("elem1"))
     Call testSuite.describe("Test jsonObj does not have elem2").assertFalse(jsonObj.isChild("elem2"))
 
+    Set jsonObj = new JsonObject(False)
+    Call testSuite.describe("Test fluent method on object building")
+    Call jsonObj.insertValue("key1", "one").insertValue("key2", "two")
+    Call testSuite.assertEqualsInteger(2, jsonObj.childCount)
+    Set jsonObj = new JsonObject(True)
+    Call testSuite.describe("Test fluent method on array building")
+    Call jsonObj.appendToJsonArray("one").appendToJsonArray("two")
+    Call testSuite.assertEqualsInteger(2, jsonObj.childCount)
+
+    Call testSuite.describe("Test removeArrayEntry")
+    Call jsonObj.removeArrayEntry(0)
+    Call testSuite.assertEqualsInteger(1, jsonObj.childCount)
+    Call testSuite.assertEqualsString("two", jsonObj.getChildren()(0).scalarValue, True)
+
+    Set jsonObj = new JsonObject(False)
+    Call jsonObj.insertValue("key1", "one").insertValue("key2", "two")
+    Call jsonObj.removeChild("key1")
+    Call testSuite.assertEqualsInteger(1, jsonObj.childCount)
+    Call testSuite.assertEqualsString("two", jsonObj.getChildren()(0).scalarValue, True)
+
 End Sub

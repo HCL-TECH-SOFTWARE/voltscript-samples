@@ -1,0 +1,5 @@
+seti.ini
+effective-atlas.json
+unit-test-reports/*
+vses/*
+libs/VoltScript*

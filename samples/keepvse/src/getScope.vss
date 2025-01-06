@@ -25,6 +25,7 @@ Sub Initialize
     Try
         server.serverURL = SERVER_NAME
         Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
+        ' DRAPI {{serverUrl}}/scope?dataSource={{scope}}, see bruno request getScope
         Set scope = server.getScope("demo")
         Print "Scope name: " & scope.Name
         Print ""

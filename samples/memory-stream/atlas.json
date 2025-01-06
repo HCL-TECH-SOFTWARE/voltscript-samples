@@ -1,0 +1,46 @@
+{
+    "name": "memory-stream",
+    "description": "Samples for in-memory stream processing",
+    "authors": [
+        "Paul Withers"
+    ],
+    "version": "1.0.0",
+    "publisher": "HCL Software",
+    "license": "Apache 2.0",
+    "library": "voltscript-docs",
+    "sourceDir": "src",
+    "testDir": "test",
+    "libsDir": "libs",
+    "vsesDir": "vses",
+    "mainScripts": [
+        "main.vss"
+    ],
+    "repositories": [
+        {
+            "id": "volt-mx-marketplace",
+            "type": "marketplace",
+            "url": "https://community.hclvoltmx.com/marketplace"
+        },
+        {
+            "id": "hcl-github",
+            "type": "github",
+            "url": "https://api.github.com/repos/HCL-TECH-SOFTWARE"
+        }
+    ],
+    "dependencies": [
+        {
+            "library": "voltscript-testing",
+            "version": "1.0.1",
+            "module": "VoltScriptTesting.vss",
+            "repository": "hcl-github"
+        }
+    ],
+    "vseDependencies": {
+        "StreamVSE": {
+            "library": "StreamVSE VoltScript Extension",
+            "version": "1.0.2",
+            "module": "streamvse",
+            "repository": "volt-mx-marketplace"
+        }
+    }
+}

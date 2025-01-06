@@ -44,6 +44,8 @@ Sub Initialize
     childrenArr = children.valueArray
     Call testSuite.describe("Check children").assertEqualsString("Jane,Frank", Join(childrenArr, ","), True)
 
+    Dim testParser as New JsonParser()
+    Call testSuite.describe("Test JSON validation").assertFalse(testParser.isValidJSON(badJson))
     Call testSuite.describe("Test parsing bad JSON")
     Try
         Set jsonObj = parseJsonString(badJson)
@@ -103,5 +105,11 @@ Sub Initialize
     Call testSuite2.describe("Find address/add2").assertTrue(actualObj Is Nothing)
     Set actualObj = jsonObj.findObjectByPath(path)
     Call testSuite2.describe("Find address/add2").assertTrue(Not actualObj Is Nothing)
+
+    ' Repeat using strings
+    Call testSuite2.describe("Check address/add1 can be found as a string").assertTrue(jsonObj.isDescendantPath("address/add1"))
+    Call testSuite2.describe("Check address/add3 can't be found as a string").assertFalse(jsonObj.isDescendantPath("address/add3", "/"))
+    Set actualObj = jsonObj.getDescendantPath("address,add2", ",")
+    Call testSuite2.describe("Find address/add2 as a string").assertTrue(Not actualObj Is Nothing)
 
 End Sub

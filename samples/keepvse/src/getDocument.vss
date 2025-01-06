@@ -29,10 +29,11 @@ Sub Initialize
         Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
         Set scope = server.getScope("demo")
 
+        ' DRAPI {{serverUrl}}/document/{{unid}}?dataSource={{scope}}, see bruno request getDocument
         Set doc = scope.getDocument(UNID, False, False, True, True, "dql")
         Print "UNID: " & doc.unid
         Print "JSON: " & doc.JsonValue
-        'Print "Form modes: " & scope.GetDocumentModes(UNID)
+        'Print "Form modes: " & scope.GetDocumentModes(UNID))
 
     Catch
         Print "Error " & Error() & " on line " & Erl()

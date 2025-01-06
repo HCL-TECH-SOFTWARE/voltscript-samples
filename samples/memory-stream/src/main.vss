@@ -1,0 +1,19 @@
+Option Public
+Option Declare
+
+Use "../libs/functions"
+
+Sub Initialize
+
+    Dim stream as New Stream()
+
+    Call stream.open("", "MEMORY")
+    Call convertPeopleToCsv(stream, loadPeople())
+    
+    ' Remember to set position back to 0 (start) before reading the stream
+    ' Otherwise you're reading from the end of the stream and will get an empty string
+    stream.position = 0
+    Print stream.readText()
+    Call stream.close()
+
+End Sub

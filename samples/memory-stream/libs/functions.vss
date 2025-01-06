@@ -1,0 +1,47 @@
+Option Public
+Option Declare
+
+UseVSE "*StreamVSE"
+
+Class Person
+
+    Private name As String
+    Private age As Integer
+
+    Sub New(passedName As String, passedAge As Integer)
+        Me.name = passedName
+        Me.age = passedAge
+    End Sub
+
+    Public Function getName() As String
+        getName = Me.name
+    End Function
+
+    Public Function getAge() As Integer
+        getAge = Me.age
+    End Function
+
+End Class
+
+Function loadPeople as Variant
+
+    Dim people(2) As Person
+    Set people(0) = New Person("Alice", 25)
+    Set people(1) = New Person("Bob", 30)
+    Set people(2) = New Person("Charlie", 35)
+
+    Return people
+
+End Function
+
+Sub convertPeopleToCsv(stream as Stream, people As Variant)
+
+    Dim personObj as Person
+    Call stream.writeText("Name,Age", EOL_CRLF)
+
+    ForAll person In people
+        Set personObj = person
+        Call stream.writeText(personObj.getName() & "," & personObj.getAge(), EOL_CRLF)
+    End ForAll
+
+End Sub
