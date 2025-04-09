@@ -28,6 +28,10 @@ Function createOpenFile(stream as Stream, filePath as String) as Boolean
     Catch
         Print "Error " & Error() & " on line " & Erl()
         Return False
+    Finally
+        If (stream.isOpen) Then
+            Call stream.close()
+        End If
     End Try
 End Function
 
