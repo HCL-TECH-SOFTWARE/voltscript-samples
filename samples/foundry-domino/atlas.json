@@ -48,7 +48,7 @@
     "vseDependencies": {    // VoltScript Extension dependencies. NOTE: These also require a label
         "KeepVSE": {        // REQUIRED: This label will be what you use in "UseVSE" statements
             "library": "KeepVSE VoltScript Extension",  // REQUIRED: Folder to be appended to the base URL when dependency management tries to download modules
-            "version": "1.0.2",  // REQUIRED: Version number of modules to download. Currently only supports explicit version or "latest"
+            "version": "1.0.3",  // REQUIRED: Version number of modules to download. Currently only supports explicit version or "latest"
             "module": "keepvse",   // REQUIRED: Filename of a VoltScript Library Module to download
             "repository": "volt-mx-marketplace"
         }

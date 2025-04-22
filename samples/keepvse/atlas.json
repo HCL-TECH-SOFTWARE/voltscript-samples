@@ -36,13 +36,13 @@
     "vseDependencies": {
         "KeepVSE": {
             "library": "KeepVSE VoltScript Extension",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "module": "keepvse",
             "repository": "volt-mx-marketplace"
         },
         "JsonVSE": {
             "library": "JsonVSE VoltScript Extension",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "module": "jsonvse",
             "repository": "volt-mx-marketplace"
         }

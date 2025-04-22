@@ -38,13 +38,13 @@
     "vseDependencies": {
         "StreamVSE": {
             "library": "StreamVSE VoltScript Extension",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "module": "streamvse",
             "repository": "volt-mx-marketplace"
         },
         "ContextVSE": {
             "library": "ContextVSE VoltScript Extension",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "module": "contextvse",
             "repository": "volt-mx-marketplace"
         }

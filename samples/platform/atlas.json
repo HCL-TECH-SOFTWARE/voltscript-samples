@@ -38,20 +38,20 @@
     ],
     "vseDependencies": {
         "OSUtilsVSE": {
-            "library": "OSUtils VoltScript Extension",
-            "version": "1.0.2",
+            "library": "OSUtilsVSE VoltScript Extension",
+            "version": "1.0.3",
             "module": "osutilsvse",
             "repository": "volt-mx-marketplace"
         },
         "ZipVSE": {
             "library": "ZipVSE VoltScript Extension",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "module": "zipvse",
             "repository": "volt-mx-marketplace"
         },
         "StreamVSE": {
             "library": "StreamVSE VoltScript Extension",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "module": "streamvse",
             "repository": "volt-mx-marketplace"
         }

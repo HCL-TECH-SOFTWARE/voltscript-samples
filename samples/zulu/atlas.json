@@ -36,7 +36,7 @@
     "vseDependencies": {
         "ZuluVSE": {
             "library": "ZuluVSE VoltScript Extension",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "module": "zuluvse",
             "repository":"volt-mx-marketplace"
         }
