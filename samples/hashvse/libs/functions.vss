@@ -145,3 +145,55 @@ Function decryptFile(sourceFile as String, targetFile as String, iv as Variant, 
     Dim cu as New CryptoUtilities()
     Call cu.fileDecryptAES(sourceFile, targetFile, iv, key, True)
 End Function
+
+%REM
+    Creates PKCS#12 files for user identification
+%END REM
+Sub createPKCIFiles()
+    Dim cu as New CryptoUtilities()
+    result = cu.createPKCIKey(CurDir & "user-id", CurDir & "user-id.pub")
+End Sub
+
+%REM
+    Encrypts a file using PKCS#12 files
+%END REM
+Sub encryptFilePKCI(privateKeyFile as String, plainFile as String, encryptedFile as String)
+    Dim cu as New CryptoUtilities()
+    Call cu.PKCIEncryptFile(privateKeyFile, True, sourceFile, targetFile, True)  ' Assumes no password on file
+End Sub
+
+%REM
+    Decrypts a file using PKCS#12 files
+%END REM
+Sub decryptFilePKCI(privateKeyFile as String, encryptedFile as String, plainFile as String)
+    Dim cu as New CryptoUtilities()
+    Call cu.PKCIDecryptFile(privateKeyFile, encryptedFile, plainFile, True)  ' Assumes no password on file
+End Sub
+
+%REM
+    Encrypts a string using PKCS#12 files
+%END REM
+Function encryptBufferPKCI(rivateKeyFile as String, stringToEncrypt) as String
+    Dim cu as New CryptoUtilities()
+    Dim publicKeyBytes as Variant
+    Dim clearBytes as Variant
+    Dim encryptedBytes as Variant
+    publicKeyBytes = cu.PKCIReadPrivateKeyFile(privateKeyFile)  ' Assumes no password on file
+    clearBytes = cu.textToBytes(stringToEncrypt)
+    encryptedBytes = cu.PKCIEncryptBuffer(publicKeyBytes, false, clearBytes)
+    Return cu.bytesToText(encryptedBytes)
+End Function
+
+%REM
+    Decrypts a string using PKCS#12 files
+%END REM
+Function decryptBufferPKCI(rivateKeyFile as String, encryptedString) as String
+    Dim cu as New CryptoUtilities()
+    Dim publicKeyBytes as Variant
+    Dim clearBytes as Variant
+    Dim encryptedBytes as Variant
+    publicKeyBytes = cu.PKCIReadPrivateKeyFile(privateKeyFile)  ' Assumes no password on file
+    encryptedBytes = cu.textToBytes(encryptedString)
+    clearBytes = cu.PKCIDecryptBuffer(publicKeyBytes, encryptedBytes)
+    Return cu.bytesToText(encryptedBytes)
+End Function
