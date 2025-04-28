@@ -27,7 +27,7 @@ Sub Initialize
         server.serverURL = SERVER_NAME
         Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
         Set scope = server.getScope("demo")
-        Call parser.loadFromJSON(scope.getViewEntries("Customers", 5))
+        Call parser.loadFromJSON(scope.getListEntries("Customers", 5))
         Print parser.toString(True)
     Catch
         Print "Error " & Error() & " on line " & Erl()

@@ -24,6 +24,7 @@ Const UNID3 = ""
 
 Sub Initialize
     Dim server as New KeepServer
+    Dim json
     Dim scope as KeepScope
     Dim unids(2) as String
     Dim docs as Variant
@@ -37,9 +38,7 @@ Sub Initialize
         unids(2) = UNID3
         ' DRAPI {{serverUrl}}/bulk/unid?dataSource={{scope}}, see bruno request getDocuments
         docs = getDocuments(server, "demo", unids)
-        ForAll doc in docs
-            Print doc
-        End ForAll
+        Print docs ' String containing JSON array
 
     Catch
         Print "Error " & Error() & " on line " & Erl()

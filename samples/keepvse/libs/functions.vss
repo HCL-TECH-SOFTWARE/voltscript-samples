@@ -50,7 +50,7 @@ Function getViewEntries(server as KeepServer, scopeName as String, viewName as S
     Dim scope as KeepScope
     Dim parser as New JsonParser()
     Set scope = server.getScope(scopeName)
-    Call parser.loadFromJSON(scope.getViewEntries(viewName, 5))
+    Call parser.loadFromJSON(scope.getListEntries(viewName, 5))
     Return parser.getRootObject()
 End Function
 
@@ -113,7 +113,7 @@ Function getDocument(server as KeepServer, scopeName as String, unid as String) 
     Dim scope as KeepScope
     Dim doc as KeepDocument
     Set scope = server.getScope(scopeName)
-    Set doc = scope.getDocument(unid, False, False, True, True, "default")
+    Set doc = scope.getDocument(unid, "html", True, True, "default")
     Return doc
 End Function
 
@@ -184,7 +184,7 @@ Function getDocuments(server as KeepServer, scopeName as String, unids() as Stri
     Dim scope as KeepScope
     Dim docs as Variant
     Set scope = server.getScope(scopeName)
-    docs = scope.getDocuments(unids)
+    docs = scope.bulkGet(unids)
     Return docs
 End Function
 

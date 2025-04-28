@@ -38,14 +38,14 @@ Sub Initialize
         Set scope = server.getScope("demo")
         ' DRAPI {{serverUrl}}/lists/{{viewName}}?dataSource={{scope}}&scope=categories, 
         ' see bruno request getViewCategorized-1
-        categories = scope.getViewCategories(VIEW_NAME, 0)
+        categories = scope.getListCategories(VIEW_NAME, 0)
         Call parser.loadFromJSON(categories)
         Set jsonObj = parser.getRootObject()
         cat(0) = jsonObj.getChildren()(0).getChildren()(3).scalarValue  ' First category entry, Color element
 
         ' DRAPI {{serverUrl}}/lists/{{viewName}}?dataSource={{scope}}&category={{category}}&count=1,
         ' see bruno request getViewCategorized-2
-        Call parser.loadFromJSON(scope.getViewEntriesByKey(VIEW_NAME, cat, 1, False))
+        Call parser.loadFromJSON(scope.getListEntriesByKey(VIEW_NAME, cat, 1, False))
         Print parser.toString(True)
     Catch
         Print "Error " & Error() & " on line " & Erl()

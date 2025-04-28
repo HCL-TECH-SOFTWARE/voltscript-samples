@@ -30,7 +30,7 @@ Sub Initialize
         Set scope = server.getScope("demo")
 
         ' DRAPI {{serverUrl}}/document/{{unid}}?dataSource={{scope}}, see bruno request getDocument
-        Set doc = scope.getDocument(UNID, False, False, True, True, "dql")
+        Set doc = scope.getDocument(UNID, "html", True, True, "dql")
         Print "UNID: " & doc.unid
         Print "JSON: " & doc.JsonValue
         'Print "Form modes: " & scope.GetDocumentModes(UNID))

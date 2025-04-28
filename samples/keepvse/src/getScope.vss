@@ -31,9 +31,9 @@ Sub Initialize
         Print ""
         Print "Scope JSON: " & scope.JsonValue
         Print ""
-        Print "Lists JSON: " & scope.listAllViews()
+        Print "Lists JSON: " & scope.getAllLists()
         Print ""
-        Print "Forms JSON:" & scope.listAllForms()
+        Print "Forms JSON:" & scope.getAllForms()
         Print ""
         Print "Agents JSON: " & scope.getAllAgents()
     Catch
