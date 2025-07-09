@@ -18,21 +18,26 @@ Option Public
 Use "../libs/functions"
 
 Sub Initialize
-    Dim server as New KeepServer
-    Dim scope as KeepScope
-    Dim replaceItems as New JsonObject()
+    Dim server as New DrapiServer
+    Dim request as DrapiRequest, serverInfo as DrapiServerInfo
 
     Try
         server.serverURL = SERVER_NAME
-        Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
-        Set scope = server.getScope("demo")
-        Call replaceItems.insertValue("Color", "Maroon")
-        ' DRAPI {{serverUrl}}/bulk/update?dataSource={{scope}}, see bruno request updateDocuments
-        Print scope.bulkUpdate("form = 'Customer' and Color = 'Red'", 5000, True,_ 
-        replaceItems.toString(false), "default", False)
+        Call server.login(USERNAME, USERPASSWORD)
+        Set request = server.createRequest("demo")
+
+        Set serverInfo = request.getServerInfo()
+        If serverInfo.ResponseCode = 200 Then
+            Print "Domino Version: " & serverInfo.DominoVersion
+            Print "Drapi Version: " & serverInfo.DrapiVersion
+        Else
+            Print "Error getting server info: " & serverInfo.ResponseCode & " - " & serverInfo.ErrorMessage
+        End If
+
     Catch
         Print "Error " & Error() & " on line " & Erl()
     Finally
         If (Not server is Nothing && server.connected) Then server.logout
     End Try
+
 End Sub

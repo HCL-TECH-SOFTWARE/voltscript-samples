@@ -18,28 +18,23 @@ Option Public
 Use "../libs/functions"
 
 Sub Initialize
-
-    Dim server as New KeepServer
-    Dim scope as KeepScope
-
+    Dim server as New DrapiServer
+    Dim robj as JsonObject
+    Dim unids as Variant
     Try
         server.serverURL = SERVER_NAME
-        Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
-        ' DRAPI {{serverUrl}}/scope?dataSource={{scope}}, see bruno request getScope
-        Set scope = server.getScope("demo")
-        Print "Scope name: " & scope.Name
-        Print ""
-        Print "Scope JSON: " & scope.JsonValue
-        Print ""
-        Print "Lists JSON: " & scope.getAllLists()
-        Print ""
-        Print "Forms JSON:" & scope.getAllForms()
-        Print ""
-        Print "Agents JSON: " & scope.getAllAgents()
+        Call server.login(USERNAME, USERPASSWORD)
+        ' DRAPI {{serverUrl}}/query?dataSource={{scope}}&action=execute, see bruno request getDql
+        Set robj = performDqlQuery(server, "demo")
+        Print robj.ChildCount & " documents found."
+        If (robj.ChildCount > 0) Then
+            unids = getUNIDs(robj.toString(False))
+            Print "UNIDs found: " & Join(unids, ", ")
+        End IF
+
     Catch
         Print "Error " & Error() & " on line " & Erl()
     Finally
         If (Not server is Nothing && server.connected) Then server.logout
     End Try
-
 End Sub

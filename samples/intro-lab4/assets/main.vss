@@ -1,29 +1,48 @@
 Option Public 
 Option Declare 
 
-UseVSE "*KeepVSE"
+UseVSE "*DrapiVSE"
 
-Private Const KEEP_SCOPE = |companiesandcontacts|
+Private Const DRAPI_SCOPE = |companiesandcontacts|
 Private Const VIEWNAME = |contactsByCompany|
 
-Private Const KEEP_URL = |YOUR_KEEP_SERVER_URL/api/v1| 
-Private Const USER_NAME = |YOUR_KEEP_USER_NAME|
-Private Const USER_PASSWORD = |YOUR_KEEP_USER_PASSWORD|
+Private Const DRAPI_URL = |YOUR_DRAPI_SERVER_URL/api/v1| 
+Private Const USER_NAME = |YOUR_DRAPI_USER_NAME|
+Private Const USER_PASSWORD = |YOUR_DRAPI_USER_PASSWORD|
 
 
 Sub Initialize() 
-    Dim server as New KeepServer()
-    Dim scope as KeepScope
+    Dim server as New DrapiServer
+    Dim request as DrapiRequest, response as DrapiResponse
+    Dim veargs as New GetListEntriesArgs
 
-    server.serverUrl = KEEP_URL
+    server.serverURL = DRAPI_URL
     Call server.login(USER_NAME, USER_PASSWORD)
-    Print USER_NAME & | User Info: | & server.GetUserInfo() 
+    Set request = server.createRequest(DRAPI_SCOPE)
+    Set response = request.getUserInfo()
+
+    If response.ResponseCode = 200 Then
+        Print "User Info: " & response.ContentBody
+    Else
+        Print "Error getting user info: " & response.ResponseCode & " - " & response.ErrorMessage
+    End If
     Print || 
 
-    Set scope = server.GetScope(KEEP_SCOPE)
-    Print KEEP_SCOPE & | Views: | & scope.ListAllViews() 
-    Print || 
+    Set response = request.getLists()
+    If response.ResponseCode = 200 Then
+        Print "Lists: " & response.ContentBody
+    Else
+        Print "Error getting lists: " & response.ResponseCode & " - " & response.ErrorMessage
+    End If
+    Print ||
 
-    Print VIEWNAME & | Entries: | & scope.getViewEntries(VIEWNAME) 
-    Print || 
+        veargs.mode = "default"
+        veargs.RichTextAs = "html"
+        veargs.Count = 5
+    Set response = request.getListEntries(VIEWNAME, veargs)
+    If response.ResponseCode = 200 Then
+        Print "Entries for " & VIEWNAME & ": " & response.ContentBody
+    Else
+        Print "Error getting list entries: " & response.ResponseCode & " - " & response.ErrorMessage
+    End If
 End Sub 

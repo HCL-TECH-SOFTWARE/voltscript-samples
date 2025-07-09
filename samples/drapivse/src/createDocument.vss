@@ -18,23 +18,31 @@ Option Public
 Use "../libs/functions"
 
 Sub Initialize
-
-    Dim server as New KeepServer
+    Dim server as New DrapiServer
+    Dim request as DrapiRequest
+    Dim jsonObj as New JsonObject()
+    Dim doc as DrapiDocument
 
     Try
         server.serverURL = SERVER_NAME
-        Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
+        Call server.login(USERNAME, USERPASSWORD)
+        Set request = server.createRequest("demo")
 
-        ' DRAPI {{serverUrl}}/info, see bruno request getServerInfo-1
-        Print "Server Info: " & server.serverInfo
-        ' DRAPI {{serverUrl}}/scopes, see bruno request getServerInfo-2
-        Print "Available scopes: " & server.ScopeList
-        ' Corresponds to claims/scope in user's JWT token
-        Print "Access Scopes: " & server.accessScopes
+        ' DRAPI {{serverUrl}}/document?dataSource={{scope}}, see bruno request createDocument
+  
+        Call jsonObj.insertValue("Form", "Customer")
+        Call jsonObj.insertValue("Color", "Red")
+        Call jsonObj.insertValue("first_name", "John")
+        Call jsonObj.insertValue("last_name", "Doe")
+        Call jsonObj.insertValue("gender", "Male")
+        Call jsonObj.insertValue("Pet", "Cockapoo")
+
+        Set doc = request.createDocument(jsonObj.toString(false))
+
+        Print doc.unid
     Catch
         Print "Error " & Error() & " on line " & Erl()
     Finally
         If (Not server is Nothing && server.connected) Then server.logout
     End Try
-
 End Sub

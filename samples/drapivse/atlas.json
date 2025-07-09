@@ -1,0 +1,32 @@
+{
+    "name": "drapi-samples",
+    "description": "HCL VoltScript DRAPI Samples",
+    "license": "Apache 2.0",
+    "authors": [
+        "Rocky Oliver"
+    ],
+    "version":"1.0.0",
+    "mainScripts": [
+        "main.vss"
+    ],
+    "sourceDir": "src",
+    "testDir": "test",
+    "vsesDir": "vses",
+    "libsDir": "libs",
+    "repositories": [
+        {
+            "id": "volt-mx-marketplace",
+            "type": "marketplace",
+            "url": "https://community.demo-hclvoltmx.com/marketplace"
+        }
+    ],
+    "dependencies": [
+    ],
+    "vseDependencies": {
+        "CouchVSE": {
+            "library": "DrapiVSE VoltScript Extension",
+            "version": "1.0.0",
+            "module": "drapivse"   
+        }
+    }
+}

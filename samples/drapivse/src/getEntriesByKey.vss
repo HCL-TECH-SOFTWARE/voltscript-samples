@@ -1,0 +1,69 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+Use "../libs/functions"
+
+Const VIEW_NAME = "Customers Categorized"
+
+Sub Initialize
+    Dim server as New DrapiServer
+    Dim request as DrapiRequest, response as DrapiResponse
+    Dim parser as New JsonParser(), jsonObj as JsonObject
+    Dim veargs as New GetListEntriesArgs
+    Dim categories(0) as String
+    Dim cat(0) as String
+
+    ' IMPORTANT: Requires a categorized view called CustomersCategorized to be added to demo database
+    ' containing Customer documents where the first column is Color field
+    ' and exposed as a List in Domino REST API
+
+    Try
+        server.serverURL = SERVER_NAME
+        Call server.login(USERNAME, USERPASSWORD)
+        Set request = server.createRequest("demo")
+
+        categories(0) = "Blue"
+        veargs.mode = "default"
+        veargs.RichTextAs = "html"
+        veargs.Count = 5
+        veargs.Categories = categories
+ 
+        Set response = request.getListEntries("Customers Categorized", veargs)
+        Call parser.loadFromJSON(response.ContentBody)
+        If response.ResponseCode = 200 Then
+            Set jsonObj = parser.getRootObject()
+            If (jsonObj.IsArray) Then
+                ForAll child in jsonObj.getChildren()
+                    Print "Entry: " & CStr(child.getChild("email").scalarValue)
+                    Print "    UNID: " & CStr(child.getChild("@unid").scalarValue)
+                    Print "    Color: " & CStr(child.getChild("Color").scalarValue)
+                End ForAll
+            Else
+                Print "No entries found."
+            End If
+        Else
+            Print "Error getting list entries: " & response.ResponseCode & " - " & response.ErrorMessage
+        End If
+        Set jsonObj = parser.getRootObject()
+        
+    Catch
+        Print "Error " & Error() & " on line " & Erl()
+    Finally
+        If (Not server is Nothing && server.connected) Then server.logout
+    End Try
+
+End Sub

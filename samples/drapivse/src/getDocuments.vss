@@ -23,23 +23,23 @@ Const UNID2 = ""
 Const UNID3 = ""
 
 Sub Initialize
-    Dim server as New KeepServer
-    Dim json
-    Dim scope as KeepScope
+    Dim server as New DrapiServer
+    Dim request as DrapiRequest, response as DrapiResponse
     Dim unids(2) as String
-    Dim docs as Variant
+    Dim docs as JsonObject
 
     Try
         server.serverURL = SERVER_NAME
-        Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
-        Set scope = server.getScope("demo")
+        Call server.login(USERNAME, USERPASSWORD)
+        Set request = server.createRequest("demo")
+
         unids(0) = UNID1
         unids(1) = UNID2
         unids(2) = UNID3
+        
         ' DRAPI {{serverUrl}}/bulk/unid?dataSource={{scope}}, see bruno request getDocuments
-        docs = getDocuments(server, "demo", unids)
-        Print docs ' String containing JSON array
-
+        Set docs = getDocuments(server, "demo", unids)  ' from functions.vss
+        Print docs.toString(False) ' String containing JSON array
     Catch
         Print "Error " & Error() & " on line " & Erl()
     Finally

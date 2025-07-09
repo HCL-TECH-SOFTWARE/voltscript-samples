@@ -1,0 +1,363 @@
+%REM
+	Copyright 2023 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+
+Option Declare
+Option Public
+
+UseVSE "*DrapiVSE"
+UseVSE "*JsonVSE"
+
+%REM
+    Set these for your Domino REST API environment.
+    Server_Name in format http(s)://www.myServerName.com/api/v1
+%END REM
+' Const SERVER_NAME = ""
+' Const USERNAME = "KEEP_USERNAME"
+' Const USERPASSWORD = "KEEP_PASSWORD"
+Const SERVER_NAME = "https://<YOUR_KEEP_SERVER>/api/v1"
+Const USERNAME = "USER_NAME"
+Const USERPASSWORD = "USER_PASSWORD"
+
+
+%REM
+    Logs into a Domino REST API server, using username and password stored in environment variables.
+    NOTE: Environment variables need to be set *before* starting the current bash session when running the code.
+    Set the SERVER_NAME constant above.
+%END REM
+Function login(server as DrapiServer, serverName as String, userName as String, password as String)
+    server.serverURL = SERVER_NAME
+    Call server.login(userName, password)
+End Function
+
+
+%REM
+    Gets a DrapiRequest for a given scope name.
+    If the server is not connected, it will attempt to log in using the USERNAME and USERPASSWORD.
+%END REM
+Function getRequest(server as DrapiServer, scopeName as String) as DrapiRequest
+    Dim request as DrapiRequest
+    ' check to make sure the server is connected
+    If Not server.Connected Then 
+        Sleep 1
+        Call server.login(USERNAME, USERPASSWORD)
+    End If
+    
+    Set request = server.CreateRequest(scopeName)
+    Return request
+End Function
+
+%REM
+    Gets the first 5 view entries from a passed view for a passed scope
+%END REM
+Function getViewEntries(server as DrapiServer, scopeName as String, viewName as String) as JsonObject
+    Dim veargs as New GetListEntriesArgs
+    Dim request as DrapiRequest, response as DrapiResponse
+    Dim parser as New JsonParser()
+
+    ' check to make suer the server is connected
+    If Not server.Connected Then 
+        Sleep 1
+        Call server.login(USERNAME, USERPASSWORD)
+    End If
+    Set request = server.CreateRequest(scopeName)
+
+    veargs.mode = "default"
+    veargs.RichTextAs = "html"
+
+    Set response = request.getListEntries(viewName, veargs)
+    Call parser.loadFromJSON(response.ContentBody)
+    Return parser.getRootObject()
+End Function
+
+%REM
+    Creates a Customer document in the demo scope
+%END REM
+Function createCustomer(server as DrapiServer) as DrapiDocument
+    Dim request as DrapiRequest
+    Dim jsonObj as New JsonObject
+    Dim doc as DrapiDocument
+    ' check to make suer the server is connected
+    If Not server.Connected Then 
+        Sleep 1
+        Call server.login(USERNAME, USERPASSWORD)
+    End If
+    Set request = server.CreateRequest("demo")
+
+    Call jsonObj.insertValue("Form", "Customer")
+    Call jsonObj.insertValue("Color", "Red")
+    Call jsonObj.insertValue("first_name", "John")
+    Call jsonObj.insertValue("last_name", "Doe")
+    Call jsonObj.insertValue("gender", "Male")
+    Call jsonObj.insertValue("Pet", "Cockapoo")
+    Set doc = request.createDocument(jsonObj.toString(false))
+    If doc.ResponseCode = 200 Then
+        Return doc
+    Else
+        Print "Error creating document: " & doc.ResponseCode & " - " & doc.ErrorMessage
+        Return Nothing
+    End If
+End Function
+
+%REM
+    Takes an array of JsonObjects and creates documents with it
+%END REM
+Sub createCustomers(server as DrapiServer, jsonObjs as Variant)
+    Dim request as DrapiRequest
+
+    ' check to make suer the server is connected
+    If Not server.Connected Then 
+        Sleep 1
+        Call server.login(USERNAME, USERPASSWORD)
+    End If
+    Set request = server.CreateRequest("demo")
+
+    Call request.bulkCreateDocuments(jsonObjs.toString(False), "html")
+End Sub
+
+%REM
+    Gets a document from a given scope with a given UNID.
+    gets it without any rich text manipulation, computing default value / input translation / 
+    input validation formulas, and returning metadata
+%END REM
+Function getDocument(server as DrapiServer, scopeName as String, unid as String) as DrapiDocument
+    Dim request as DrapiRequest
+    Dim doc as DrapiDocument
+     ' check to make suer the server is connected
+    If Not server.Connected Then 
+        Sleep 1
+        Call server.login(USERNAME, USERPASSWORD)
+    End If
+    Set request = server.CreateRequest(scopeName)
+
+    Set doc = request.getDocument(unid)
+    Return doc
+End Function
+
+%REM
+    Gets Form Access Modes for a document from a given scope with a given UNID.
+%END REM
+Function getDocumentModes(server as DrapiServer, scopeName as String, unid as String) as DrapiResponse
+    Dim request as DrapiRequest, response as DrapiResponse
+    Dim parser as New JsonParser()
+    ' check to make suer the server is connected
+    If Not server.Connected Then 
+        Sleep 1
+        Call server.login(USERNAME, USERPASSWORD)
+    End If
+    Set request = server.CreateRequest(scopeName)
+
+    Return request.getDocumentModes(unid)
+End Function
+
+%REM
+    Gets a document and updates the Color field
+%END REM
+Function updateDocument(server as DrapiServer, scopeName as String, unid as String) as DrapiDocument
+    Dim parser as New JsonParser()
+    Dim jsonObj as JsonObject
+    Dim request as DrapiRequest, response as DrapiResponse
+    Dim doc as DrapiDocument
+    Dim rstr as String
+    ' check to make suer the server is connected
+    If Not server.Connected Then 
+        Sleep 1
+        Call server.login(USERNAME, USERPASSWORD)
+    End If
+    Set request = server.CreateRequest(scopeName)
+
+    ' get the document, load it into a JsonObject, update the Color field, and save it using put()
+    Set doc = request.getDocument(unid)
+    Call parser.loadFromJSON(doc.JsonValue)
+    Set jsonObj = parser.getRootObject()
+    Call jsonObj.insertValue("Color", "Red")
+    doc.JsonValue = jsonObj.toString(False)
+    Call doc.put("default")      
+    Print "Doc JSON: " & doc.JsonValue
+
+    ' now use patchDocument() to update the Color field
+    rstr = |{"Color": "Blue"}|
+    Set response = request.patchDocument(unid, rstr, "default")
+    Set response = doc.refresh()
+    Print "New JSON: " & doc.JsonValue
+    Return doc
+End Function
+
+%REM
+    Deletes a document without retrieving it first
+%END REM
+Sub deleteDocumentByID(server as DrapiServer, scopeName as String, unid as String)
+    Dim request as DrapiRequest, response as DrapiResponse
+    ' check to make suer the server is connected
+    If Not server.Connected Then 
+        Sleep 1
+        Call server.login(USERNAME, USERPASSWORD)
+    End If
+    Set request = server.CreateRequest(scopeName)
+
+    Set response = request.deleteDocument(unid, "admin")
+End Sub
+
+%REM
+    Gets a document from a given scope with a given UNID. Creates a copy, then deletes the original
+%END REM
+Function copyAndDeleteDocument(server as DrapiServer, scopeName as String, unid as String) as DrapiDocument
+    Dim request as DrapiRequest, response as DrapiResponse
+    Dim doc as DrapiDocument
+    Dim newDoc as DrapiDocument
+    ' check to make suer the server is connected
+    If Not server.Connected Then 
+        Sleep 1
+        Call server.login(USERNAME, USERPASSWORD)
+    End If
+    Set request = server.CreateRequest(scopeName)
+
+    Set doc = request.getDocument(unid)
+
+    Set newDoc = request.createDocument(doc.JsonValue)
+
+    Call doc.deleteDocument("admin")
+    Return newDoc
+End Function
+
+%REM
+    Gets documents for given UNIDs, returning a Variant which is an array of strings
+%END REM
+Function getDocuments(server as DrapiServer, scopeName as String, unids() as String) as JsonObject
+    Dim request as DrapiRequest, response as DrapiResponse
+    Dim parser as New JsonParser()
+    Dim jsonObj as JsonObject
+    ' check to make suer the server is connected
+    If Not server.Connected Then 
+        Sleep 1
+        Call server.login(USERNAME, USERPASSWORD)
+    End If
+    Set request = server.CreateRequest(scopeName)
+
+    ' get the documents for the given UNIDs
+    Set response = request.bulkGetDocuments(unids)
+
+    If response.ResponseCode = 200 Then
+        Call parser.loadFromJSON(response.ContentBody)
+        Set jsonObj = parser.getRootObject()
+    End If
+
+    Return jsonObj
+End Function
+
+%REM
+    Builds a DQL query using JSON VSE and submits it to Domino REST API
+%END REM
+Function performDqlQuery(server as DrapiServer, scopeName as String) as JsonObject
+    Dim request as DrapiRequest, response as DrapiResponse
+    Dim parser as New JsonParser(), jsonObj as JsonObject
+    Dim query as New JsonObject
+    Dim vars as New JsonObject
+
+    ' check to make suer the server is connected
+    If Not server.Connected Then 
+        Sleep 1
+        Call server.login(USERNAME, USERPASSWORD)
+    End If
+    Set request = server.CreateRequest(scopeName)
+
+    Call query.insertValue("maxScanDocs", 5000)
+    Call query.insertValue("maxScanEntries", 2000)
+    Call query.insertValue("mode", "default")
+    Call query.insertValue("noViews", False)
+    Call query.insertValue("timeoutSecs", 300)
+    Call query.insertValue("query", "form = 'Customer' and Color = ?Color")
+    Call query.insertValue("viewRefresh", False)
+    Set vars = new JsonObject()
+    vars.label = "variables"
+    Call vars.insertValue("Color", "Blue")
+    Call query.insertObject(vars)
+
+    Set response = request.dqlQuery(query.toString(True), "execute", 5)
+    If response.ResponseCode = 200 Then
+        Call parser.loadFromJSON(response.ContentBody)
+        Set jsonObj = parser.getRootObject()
+        Return jsonObj
+    Else
+        Print "Error performing DQL query: " & response.ResponseCode & " - " & response.ErrorMessage
+        Return ""
+    End If
+    
+End Function
+
+%REM
+    Builds a DQL query using JSON VSE and submits it to Domino REST API
+%END REM
+Function updateDocuments(server as DrapiServer, scopeName as String) as String
+    Dim request as DrapiRequest, response as DrapiResponse
+    dim query as String
+    Dim replaceItems as New JsonObject()
+
+    ' check to make suer the server is connected
+    If Not server.Connected Then 
+        Sleep 1
+        Call server.login(USERNAME, USERPASSWORD)
+    End If
+    Set request = server.CreateRequest(scopeName)
+    
+    Call replaceItems.insertValue("Color", "Maroon")
+    query = "form = 'Customer' and Color = 'Red'"
+
+    Set response = request.bulkPatchDocuments(query, replaceItems.toString(False), "html", "default", 5000, True, True)
+
+    If response.ResponseCode = 200 Then
+        Return response.ContentBody
+    Else
+        Print "Error updating documents: " & response.ResponseCode & " - " & response.ErrorMessage
+        Return ""
+    End If
+End Function
+
+%REM
+    Creates an attachment in a field called  "RichText"
+%END REM
+Function addAttachment(doc as DrapiDocument, filePath as String) as String
+    Dim request as DrapiRequest, response as DrapiResponse
+    Set request = doc.ParentRequest
+    If filepath = "" Then
+        filePath = CurDir() & "/libs/functions.vss"
+    End If
+    Set response = request.createAttachment(doc.Unid, filePath, "RichText")
+    If response.ResponseCode = 200 Then
+        Return response.ContentBody
+    Else
+        Print "Error creating attachment: " & response.ResponseCode & " - " & response.ErrorMessage
+        Return ""
+    End If
+End Function
+
+' Often you have to provide a string array of UNIDs to the DRAPI methods.
+' This function will return an string array of UNIDs from the metadata (@meta/unid) of a drapi document JsonArray, 
+' rather than a variant array.
+Function getUNIDs(jstr as String) as Variant
+    Dim jparse as New JsonParser()
+    Dim jobj as JsonObject, uobj as JsonObject, unids as Variant
+    Dim i as Integer
+
+    Call jparse.loadFromJson(jstr)
+    Set jobj = jparse.getRootObject
+    
+    Redim unids(jobj.childCount - 1) as String
+    Forall child in jobj.getChildren()
+        Set uobj = child.getDescendantPath("@meta/unid", "/")
+        unids(i) = uobj.ScalarValue
+        i += 1
+    End Forall
+
+    Return unids
+End Function

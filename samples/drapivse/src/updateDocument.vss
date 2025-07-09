@@ -20,29 +20,36 @@ Use "../libs/functions"
 Const UNID = "" 'UPDATE THIS
 
 Sub Initialize
-    Dim server as New KeepServer
-    Dim scope as KeepScope
-    Dim parser as New JsonParser()
-    Dim jsonObj as New JsonObject()
-    Dim doc as KeepDocument
+    Dim server as New DrapiServer
+    Dim request as DrapiRequest, response as DrapiResponse
+    Dim parser as New JsonParser(), jsonObj as JsonObject
+    Dim doc as DrapiDocument
+    Dim rstr as String
 
     Try
         server.serverURL = SERVER_NAME
-        Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
-        Set scope = server.getScope("demo")
+        Call server.login(USERNAME, USERPASSWORD)
+        Set request = server.createRequest("demo")
 
-        ' DRAPI {{serverUrl}}/document/{{unid}}?dataSource={{scope}}, see bruno request updateDocument
-        Set doc = scope.getDocument(UNID)
+        ' get the document, load it into a JsonObject, update the Color field, and save it using put()
+        Set doc = request.getDocument(UNID)
         Call parser.loadFromJSON(doc.JsonValue)
         Set jsonObj = parser.getRootObject()
         Call jsonObj.insertValue("Color", "Red")
         doc.JsonValue = jsonObj.toString(False)
-        Call doc.save("", "default")
-        
-        Print "Color: " & doc.getValue("Color")
-        Call doc.replaceValue("Color", "Blue")
+        Call parser.loadFromJSON(doc.JsonValue)
+        Set jsonObj = parser.getRootObject()
+        Print "Color updated to " &  jsonObj.getChild("Color").scalarValue
+        Print "Doc JSON: " & doc.JsonValue
+
+        ' now use patchDocument() to update the Color field
+        rstr = |{"Color": "Blue"}|
+        Set response = request.patchDocument(unid, rstr, "default")
+        Set response = doc.refresh()
+        Call parser.loadFromJSON(doc.JsonValue)
+        Set jsonObj = parser.getRootObject()
+        Print "Color changed to " &  jsonObj.getChild("Color").scalarValue
         Print "New JSON: " & doc.JsonValue
-        Call doc.save("", "default")
     Catch
         Print "Error " & Error() & " on line " & Erl()
     Finally

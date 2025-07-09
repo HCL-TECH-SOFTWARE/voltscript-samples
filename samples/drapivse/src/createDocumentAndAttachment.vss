@@ -18,29 +18,33 @@ Option Public
 Use "../libs/functions"
 
 Sub Initialize
-    Dim server as New KeepServer
-    Dim scope as KeepScope
+    Dim server as New DrapiServer
+    Dim request as DrapiRequest, response as DrapiResponse
     Dim jsonObj as New JsonObject()
-    Dim doc as KeepDocument
-    Dim retVal as String
+    Dim doc as DrapiDocument
 
     Try
         server.serverURL = SERVER_NAME
-        Call server.login(Environ$(USERNAME_ENVVAR), Environ$(USERPASSWORD_ENVVAR))
-        Set scope = server.getScope("demo")
+        Call server.login(USERNAME, USERPASSWORD)
+        Set request = server.createRequest("demo")
 
-        Set doc = scope.createDocument()
+        ' DRAPI {{serverUrl}}/document?dataSource={{scope}}, see bruno request createDocument
+  
         Call jsonObj.insertValue("Form", "Customer2")
         Call jsonObj.insertValue("Color", "Red")
         Call jsonObj.insertValue("first_name", "John")
         Call jsonObj.insertValue("last_name", "Doe")
         Call jsonObj.insertValue("gender", "Male")
         Call jsonObj.insertValue("Pet", "Cockapoo")
-        doc.JsonValue = jsonObj.toString(false)
-        Call doc.save("", "default")
-        Print doc.unid
-        retval = doc.createAttachment(CurDir() & "/src/createDocumentAndAttachment.vss", "RichText")
-        Print retVal
+
+        Set doc = request.createDocument(jsonObj.toString(false))
+        Print "Document UNID: " & doc.Unid
+        Set response = request.createAttachment(doc.Unid, CurDir() & "/src/createDocumentAndAttachment.vss", "RichText")
+        If response.ResponseCode = 200 Then
+            Print response.ContentBody
+        Else
+            Print "Error creating attachment: " & response.ResponseCode & " - " & response.ErrorMessage
+        End If
 
     Catch
         Print "Error " & Error() & " on line " & Erl()
