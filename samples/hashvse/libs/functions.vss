@@ -147,53 +147,53 @@ Function decryptFile(sourceFile as String, targetFile as String, iv as Variant, 
 End Function
 
 %REM
-    Creates PKCS#12 files for user identification
+    Creates RSA key pair for encryption, following PKCS #1 v.2.2 standards.
 %END REM
-Sub createPKCIFiles()
+Sub createRSAKeys()
     Dim cu as New CryptoUtilities()
-    result = cu.createPKCIKey(CurDir & "user-id", CurDir & "user-id.pub")
+    result = cu.createRSAKeyPair(CurDir & "user-id", CurDir & "user-id.pub")
 End Sub
 
 %REM
-    Encrypts a file using PKCS#12 files
+    Encrypts a file using RSAES-OAEP and a RSA private key
 %END REM
-Sub encryptFilePKCI(privateKeyFile as String, plainFile as String, encryptedFile as String)
+Sub encryptFilePKCS(privateKeyFile as String, plainFile as String, encryptedFile as String)
     Dim cu as New CryptoUtilities()
-    Call cu.PKCIEncryptFile(privateKeyFile, True, sourceFile, targetFile, True)  ' Assumes no password on file
+    Call cu.PKCSEncryptFile(privateKeyFile, True, sourceFile, targetFile, True)  ' Assumes no password on file
 End Sub
 
 %REM
-    Decrypts a file using PKCS#12 files
+    Decrypts a file using RSAES-OAEP and a RSA private key
 %END REM
-Sub decryptFilePKCI(privateKeyFile as String, encryptedFile as String, plainFile as String)
+Sub decryptFilePKCS(privateKeyFile as String, encryptedFile as String, plainFile as String)
     Dim cu as New CryptoUtilities()
-    Call cu.PKCIDecryptFile(privateKeyFile, encryptedFile, plainFile, True)  ' Assumes no password on file
+    Call cu.PKCSDecryptFile(privateKeyFile, encryptedFile, plainFile, True)  ' Assumes no password on file
 End Sub
 
 %REM
-    Encrypts a string using PKCS#12 files
+    Encrypts a string using RSAES-OAEP and a RSA private key
 %END REM
-Function encryptBufferPKCI(rivateKeyFile as String, stringToEncrypt) as String
+Function encryptBufferPKCS(privateKeyFile as String, stringToEncrypt) as String
     Dim cu as New CryptoUtilities()
     Dim publicKeyBytes as Variant
     Dim clearBytes as Variant
     Dim encryptedBytes as Variant
-    publicKeyBytes = cu.PKCIReadPrivateKeyFile(privateKeyFile)  ' Assumes no password on file
+    publicKeyBytes = cu.PKCSReadPrivateKeyFile(privateKeyFile)  ' Assumes no password on file
     clearBytes = cu.textToBytes(stringToEncrypt)
-    encryptedBytes = cu.PKCIEncryptBuffer(publicKeyBytes, false, clearBytes)
+    encryptedBytes = cu.PKCSEncryptBuffer(publicKeyBytes, false, clearBytes)
     Return cu.bytesToText(encryptedBytes)
 End Function
 
 %REM
-    Decrypts a string using PKCS#12 files
+    Decrypts a string using RSAES-OAEP and a RSA private key
 %END REM
-Function decryptBufferPKCI(rivateKeyFile as String, encryptedString) as String
+Function decryptBufferPKCS(privateKeyFile as String, encryptedString) as String
     Dim cu as New CryptoUtilities()
     Dim publicKeyBytes as Variant
     Dim clearBytes as Variant
     Dim encryptedBytes as Variant
-    publicKeyBytes = cu.PKCIReadPrivateKeyFile(privateKeyFile)  ' Assumes no password on file
+    publicKeyBytes = cu.PKCSReadPrivateKeyFile(privateKeyFile)  ' Assumes no password on file
     encryptedBytes = cu.textToBytes(encryptedString)
-    clearBytes = cu.PKCIDecryptBuffer(publicKeyBytes, encryptedBytes)
+    clearBytes = cu.PKCSDecryptBuffer(publicKeyBytes, encryptedBytes)
     Return cu.bytesToText(encryptedBytes)
 End Function
