@@ -1,7 +1,7 @@
 {
     "name": "voltscript-intro-lab-6",			// REQUIRED: Enter a short name for your VoltScript project, e.g. "Demo1"
     "description": "Lab 06 - Putting it all Together",	// REQUIRED: Enter a longer description, e.g. "My first demo project"
-    "displayName": "JsonVSE + VoltScriptJsonConverter + KeepVSE",  // A longer name to refer to the project, e.g. "Demo 1"
+    "displayName": "JsonVSE + VoltScriptJsonConverter + DRAPIVSE",  // A longer name to refer to the project, e.g. "Demo 1"
     "license": "Apache 2.0",	// A license to publish the project under.
                                 // If you want this to be used by others, Apache 2.0 or MIT are recommended
     "publisher": "HCL America, Inc.",	// Copyright owner
@@ -39,10 +39,10 @@
         }
     ],    
     "vseDependencies": {
-        "KeepVSE": {
-            "library": "KeepVSE VoltScript Extension",
-            "version": "1.0.2",
-            "module": "keepvse",
+        "DrapiVSE": {
+            "library": "DrapiVSE VoltScript Extension",
+            "version": "1.0.0",
+            "module": "drapivse",
             "repository": "volt-mx-marketplace"
         }
     }

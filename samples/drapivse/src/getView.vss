@@ -25,36 +25,22 @@ Sub Initialize
 
     Try
         server.serverURL = SERVER_NAME
-        Call server.login(USERNAME, USERPASSWORD)
-        Set request = server.createRequest("demo")
+        server.JWTToken = TOKEN ' Save a valid token in functions.vss
 
-        veargs.mode = "default"
-        veargs.RichTextAs = "html"
-        veargs.Count = 5
+        Set jsonObj = getEntries(server, "demo", "Customers")
+        
+        If (jsonObj.IsArray) Then
+            ForAll child in jsonObj.getChildren()
+                Print "Entry: " & CStr(child.getChild("email").scalarValue)
+                Print "    UNID: " & CStr(child.getChild("@unid").scalarValue)
 
-        Set response = request.getListEntries("Customers", veargs)
-        If response.ResponseCode = 200 Then
-            Call parser.loadFromJson(response.ContentBody)
-
-            Set jsonObj = parser.getRootObject()
-
-            If (jsonObj.IsArray) Then
-                ForAll child in jsonObj.getChildren()
-                    Print "Entry: " & CStr(child.getChild("email").scalarValue)
-                    Print "    UNID: " & CStr(child.getChild("@unid").scalarValue)
-
-                End ForAll
-            Else
-                Print "No entries found."
-            End If
+            End ForAll
         Else
-            Print "Error getting list entries: " & response.ResponseCode & " - " & response.ErrorMessage
+            Print "No entries found."
         End If
 
     Catch
         Print "Error " & Error() & " on line " & Erl()
-    Finally
-        If (Not server is Nothing && server.connected) Then server.logout
     End Try
 
 End Sub

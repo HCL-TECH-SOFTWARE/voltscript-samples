@@ -19,21 +19,19 @@ Use "../libs/functions"
 
 Sub Initialize
     Dim server as New DrapiServer
-    Dim request as DrapiRequest, response as DrapiResponse
+    Dim request as DrapiRequest
     Dim parser as New JsonParser(), jsonObj as JsonObject
     Dim replaceItems as New JsonObject()
+    Dim responseStr as String
     Dim query as String, email as String
 
     Try
         server.serverURL = SERVER_NAME
-        Call server.login(USERNAME, USERPASSWORD)
-        Set request = server.createRequest("demo")
-        Call replaceItems.insertValue("Color", "Maroon")
-        query = "form = 'Customer' and Color = 'Red'"
+        server.JWTToken = TOKEN ' Save a valid token in functions.vss
 
-        Set response = request.bulkPatchDocuments(query, replaceItems.toString(False), "html", "default", 5000, True, True)
-        If response.ResponseCode = 200 Then
-            Call parser.loadFromJSON(response.ContentBody)
+        responseStr = updateDocuments(server, "demo")
+        If responseStr != "" Then
+            Call parser.loadFromJSON(responseStr)
             Set jsonObj = parser.getRootObject()
             If (jsonObj.IsArray) Then
                 Print jsonObj.ChildCount & " documents updated:"
@@ -51,13 +49,9 @@ Sub Initialize
             Else
                 Print "No documents updated."
             End If
-        Else
-            Print "Error updating documents: " & response.ResponseCode & " - " & response.ErrorMessage
         End If
 
     Catch
         Print "Error " & Error() & " on line " & Erl()
-    Finally
-        If (Not server is Nothing && server.connected) Then server.logout
     End Try
 End Sub

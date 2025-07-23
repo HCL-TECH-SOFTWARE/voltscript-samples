@@ -60,152 +60,148 @@ End Function
 %REM
     Gets the first 5 view entries from a passed view for a passed scope
 %END REM
-Function getViewEntries(server as DrapiServer, scopeName as String, viewName as String) as JsonObject
-    Dim veargs as New GetListEntriesArgs
+Function getEntries(server as DrapiServer, scopeName as String, viewName as String) as JsonObject
     Dim request as DrapiRequest, response as DrapiResponse
-    Dim parser as New JsonParser()
+    Dim entryArgs as New GetListEntriesArgs
+    Dim parser as New JsonParser, jobj as JsonObject
 
-    ' check to make suer the server is connected
-    If Not server.Connected Then 
-        Sleep 1
-        Call server.login(USERNAME, USERPASSWORD)
+    Set request = server.createRequest(scopeName)
+    
+    entryArgs.mode = "default"
+    entryArgs.RichTextAs = "html"
+    entryArgs.Count = 5
+    Set response = request.getListEntries(viewName, entryArgs)
+
+    If response.ResponseCode = 200 Then
+        Call parser.loadFromJSON(response.ContentBody)
+        Set jobj = parser.getRootObject
     End If
-    Set request = server.CreateRequest(scopeName)
 
-    veargs.mode = "default"
-    veargs.RichTextAs = "html"
-
-    Set response = request.getListEntries(viewName, veargs)
-    Call parser.loadFromJSON(response.ContentBody)
-    Return parser.getRootObject()
+    return jobj
 End Function
 
 %REM
-    Creates a Customer document in the demo scope
+    Creates a Customer document in the given scope
 %END REM
-Function createCustomer(server as DrapiServer) as DrapiDocument
-    Dim request as DrapiRequest
-    Dim jsonObj as New JsonObject
-    Dim doc as DrapiDocument
-    ' check to make suer the server is connected
-    If Not server.Connected Then 
-        Sleep 1
-        Call server.login(USERNAME, USERPASSWORD)
-    End If
-    Set request = server.CreateRequest("demo")
+Function createCustomer(server as DrapiServer, scopeName as String) as DrapiDocument
+    Dim request as DrapiRequest, cdoc as DrapiDocument
+    Dim jobj as New JsonObject
 
-    Call jsonObj.insertValue("Form", "Customer")
-    Call jsonObj.insertValue("Color", "Red")
-    Call jsonObj.insertValue("first_name", "John")
-    Call jsonObj.insertValue("last_name", "Doe")
-    Call jsonObj.insertValue("gender", "Male")
-    Call jsonObj.insertValue("Pet", "Cockapoo")
-    Set doc = request.createDocument(jsonObj.toString(false))
-    If doc.ResponseCode = 200 Then
-        Return doc
+    Set request = server.createRequest(scopeName)
+    Call jobj.insertValue("Form", "Customer")
+    Call jobj.insertValue("Color", "Red")
+    Call jobj.insertValue("first_name", "John")
+    Call jobj.insertValue("last_name", "Doe")
+    Call jobj.insertValue("gender", "Male")
+    Call jobj.insertValue("Pet", "Cockapoo")
+
+    Set cdoc = request.createDocument(jobj.toString(False))
+    If cdoc.ResponseCode = 200 Then
+        ' Document created successfully
+        Print "Customer created with ID: " & cdoc.UNID
     Else
-        Print "Error creating document: " & doc.ResponseCode & " - " & doc.ErrorMessage
-        Return Nothing
+        ' Handle error
+        Print "Error creating customer: code: " & cdoc.ResponseCode & ", message: " & cdoc.ErrorMessage
     End If
+
+    return cdoc
 End Function
 
 %REM
     Takes an array of JsonObjects and creates documents with it
 %END REM
-Sub createCustomers(server as DrapiServer, jsonObjs as Variant)
-    Dim request as DrapiRequest
-
-    ' check to make suer the server is connected
-    If Not server.Connected Then 
-        Sleep 1
-        Call server.login(USERNAME, USERPASSWORD)
+Sub createCustomers(server as DrapiServer, scopeName as String, docsjson as String)
+    Dim request as DrapiRequest, response as DrapiResponse
+ 
+    Set request = server.createRequest(scopeName)
+    Set response = request.bulkCreateDocuments(docsjson)
+    If response.ResponseCode = 200 Then
+        Print "Customers created successfully."
+    Else
+        Print "Error creating customers: code: " & response.ResponseCode & ", message: " & response.ErrorMessage
     End If
-    Set request = server.CreateRequest("demo")
-
-    Call request.bulkCreateDocuments(jsonObjs.toString(False), "html")
 End Sub
 
 %REM
     Gets a document from a given scope with a given UNID.
-    gets it without any rich text manipulation, computing default value / input translation / 
-    input validation formulas, and returning metadata
 %END REM
-Function getDocument(server as DrapiServer, scopeName as String, unid as String) as DrapiDocument
-    Dim request as DrapiRequest
-    Dim doc as DrapiDocument
-     ' check to make suer the server is connected
-    If Not server.Connected Then 
-        Sleep 1
-        Call server.login(USERNAME, USERPASSWORD)
-    End If
-    Set request = server.CreateRequest(scopeName)
+Function getDoc(server as DrapiServer, scopeName as String, docID as String) as DrapiDocument
+    Dim request as DrapiRequest, doc as DrapiDocument
 
-    Set doc = request.getDocument(unid)
+    Set request = server.createRequest(scopeName)
+    Set doc = request.getDocument(docID)
     Return doc
 End Function
 
 %REM
     Gets Form Access Modes for a document from a given scope with a given UNID.
 %END REM
-Function getDocumentModes(server as DrapiServer, scopeName as String, unid as String) as DrapiResponse
+Function getDocModes(server as DrapiServer, scopeName as String, unid as String) as JsonObject
     Dim request as DrapiRequest, response as DrapiResponse
-    Dim parser as New JsonParser()
-    ' check to make suer the server is connected
-    If Not server.Connected Then 
-        Sleep 1
-        Call server.login(USERNAME, USERPASSWORD)
+    Dim parser as New JsonParser, jobj as JsonObject
+    Set request = server.createRequest(scopeName)
+    Set response = request.getDocumentModes(unid)
+    If response.ResponseCode = 200 Then
+        Call parser.loadFromJSON(response.ContentBody)
+        Set jobj = parser.getRootObject
     End If
-    Set request = server.CreateRequest(scopeName)
+    return jobj
+End Function
 
-    Return request.getDocumentModes(unid)
+%REM 
+    Get the default mode for the given form
+%END REM
+Function getDefaultMode(server as DrapiServer, scopeName as String, formName as String) as JsonObject
+    Dim request as DrapiRequest, response as DrapiResponse
+    Dim entryArgs as New GetListEntriesArgs
+    Dim parser as New JsonParser, jobj as JsonObject, fobj as JsonObject, mobj as JsonObject
+
+    Set request = server.createRequest(scopeName)
+    Set response = request.getScopeInfo()
+    If response.ResponseCode = 200 Then
+        Call parser.loadFromJSON(response.ContentBody)
+        Set jobj = parser.getRootObject
+        Forall c in jobj.getChild("forms").getChildren()
+            If c.getChild("formName").scalarValue = formName Then
+                Set fobj = c
+                Forall m in fobj.getChild("formModes").getChildren()
+                    If m.getChild("modeName").scalarValue = "default" Then
+                        Set mobj = m
+                        Exit Forall
+                    End If
+                End Forall
+            End If
+        End Forall
+    End If
+
+    return mobj
 End Function
 
 %REM
-    Gets a document and updates the Color field
+    Gets a document and updates the Color field to "Red", then returns the updated document.
 %END REM
-Function updateDocument(server as DrapiServer, scopeName as String, unid as String) as DrapiDocument
-    Dim parser as New JsonParser()
-    Dim jsonObj as JsonObject
-    Dim request as DrapiRequest, response as DrapiResponse
-    Dim doc as DrapiDocument
-    Dim rstr as String
-    ' check to make suer the server is connected
-    If Not server.Connected Then 
-        Sleep 1
-        Call server.login(USERNAME, USERPASSWORD)
-    End If
-    Set request = server.CreateRequest(scopeName)
+Function updateDoc(server as DrapiServer, scopeName as String, unid as String) as DrapiDocument
+    Dim request as DrapiRequest, doc as DrapiDocument
+    Dim jobj as New JsonObject
 
-    ' get the document, load it into a JsonObject, update the Color field, and save it using put()
-    Set doc = request.getDocument(unid)
-    Call parser.loadFromJSON(doc.JsonValue)
-    Set jsonObj = parser.getRootObject()
-    Call jsonObj.insertValue("Color", "Red")
-    doc.JsonValue = jsonObj.toString(False)
-    Call doc.put("default")      
-    Print "Doc JSON: " & doc.JsonValue
-
-    ' now use patchDocument() to update the Color field
-    rstr = |{"Color": "Blue"}|
-    Set response = request.patchDocument(unid, rstr, "default")
-    Set response = doc.refresh()
-    Print "New JSON: " & doc.JsonValue
+    Set request = server.createRequest(scopeName)
+    Call jobj.insertValue("Color", "Red")
+    Set doc = request.patchDocument(unid, jobj.toString(False), "html", "default")
     Return doc
 End Function
 
 %REM
     Deletes a document without retrieving it first
 %END REM
-Sub deleteDocumentByID(server as DrapiServer, scopeName as String, unid as String)
+Sub deleteDocumentByUNID(server as DrapiServer, scopeName as String, unid as String)
     Dim request as DrapiRequest, response as DrapiResponse
-    ' check to make suer the server is connected
-    If Not server.Connected Then 
-        Sleep 1
-        Call server.login(USERNAME, USERPASSWORD)
+    Set request = server.createRequest(scopeName)
+    Set response = request.deleteDocument(unid, "default")
+    If response.ResponseCode = 200 Then
+        Print "Document with UNID " & unid & " deleted successfully."
+    Else
+        Print "Error deleting document: code: " & response.ResponseCode & ", message: " & response.ErrorMessage
     End If
-    Set request = server.CreateRequest(scopeName)
-
-    Set response = request.deleteDocument(unid, "admin")
 End Sub
 
 %REM
@@ -213,46 +209,47 @@ End Sub
 %END REM
 Function copyAndDeleteDocument(server as DrapiServer, scopeName as String, unid as String) as DrapiDocument
     Dim request as DrapiRequest, response as DrapiResponse
-    Dim doc as DrapiDocument
-    Dim newDoc as DrapiDocument
-    ' check to make suer the server is connected
-    If Not server.Connected Then 
-        Sleep 1
-        Call server.login(USERNAME, USERPASSWORD)
+    Dim doc as DrapiDocument, newdoc as DrapiDocument
+
+    Set request = server.createRequest(scopeName)
+    Set doc = request.getDocument(unid, "default")
+    If doc.ResponseCode = 200 Then
+        Set newdoc = request.createDocument(doc.JsonValue)
+        If newdoc.ResponseCode = 200 Then
+            Set response = request.deleteDocument(unid, "default")
+        End If
     End If
-    Set request = server.CreateRequest(scopeName)
-
-    Set doc = request.getDocument(unid)
-
-    Set newDoc = request.createDocument(doc.JsonValue)
-
-    Call doc.deleteDocument("admin")
-    Return newDoc
+    return newdoc
 End Function
 
 %REM
-    Gets documents for given UNIDs, returning a Variant which is an array of strings
+    Gets documents for given UNIDs, returning a JsonObject with the documents.
 %END REM
 Function getDocuments(server as DrapiServer, scopeName as String, unids() as String) as JsonObject
     Dim request as DrapiRequest, response as DrapiResponse
-    Dim parser as New JsonParser()
-    Dim jsonObj as JsonObject
-    ' check to make suer the server is connected
-    If Not server.Connected Then 
-        Sleep 1
-        Call server.login(USERNAME, USERPASSWORD)
-    End If
-    Set request = server.CreateRequest(scopeName)
-
-    ' get the documents for the given UNIDs
-    Set response = request.bulkGetDocuments(unids)
-
+    Dim parser as New JsonParser, jobj as JsonObject
+    Set request = server.createRequest(scopeName)
+    Set response = request.bulkGetDocuments(unids, "html", "default", True)
     If response.ResponseCode = 200 Then
         Call parser.loadFromJSON(response.ContentBody)
-        Set jsonObj = parser.getRootObject()
+        Set jobj = parser.getRootObject
     End If
+    return jobj
+End Function
 
-    Return jsonObj
+%REM
+    Deletes documents for given UNIDs, returning a JsonObject with the results.
+%END REM
+Function deleteDocuments(server as DrapiServer, scopeName as String, unids() as String) as JsonObject
+    Dim request as DrapiRequest, response as DrapiResponse
+    Dim parser as New JsonParser, jobj as JsonObject
+    Set request = server.createRequest(scopeName)
+    Set response = request.bulkDeleteDocuments(unids, "default")
+    If response.ResponseCode = 200 Then
+        Call parser.loadFromJSON(response.ContentBody)
+        Set jobj = parser.getRootObject
+    End If
+    return jobj
 End Function
 
 %REM
@@ -339,6 +336,36 @@ Function addAttachment(doc as DrapiDocument, filePath as String) as String
         Print "Error creating attachment: " & response.ResponseCode & " - " & response.ErrorMessage
         Return ""
     End If
+End Function
+
+%REM
+    gets the indicated attachment from the provided document, and downloads it to the target path.
+%END REM
+Function getAttachment(doc as DrapiDocument, attachName as String, targetPath as String) as JsonObject
+    Dim request as DrapiRequest, response as DrapiResponse
+    Dim parser as New JsonParser, jobj as JsonObject
+    Set request = doc.ParentRequest
+    Set response = request.getAttachment(doc.UNID, attachName, targetPath)
+    If response.ResponseCode = 200 Then
+        Call parser.loadFromJSON(response.ContentBody)
+        Set jobj = parser.getRootObject
+    End If
+    return jobj
+End Function
+
+%REM
+    deletes the indicated attachment from the provided document.
+%END REM
+Function deleteAttachment(doc as DrapiDocument, attachName as String, fieldName as String) as JsonObject
+    Dim request as DrapiRequest, response as DrapiResponse
+    Dim parser as New JsonParser, jobj as JsonObject
+    Set request = doc.ParentRequest
+    Set response = request.deleteAttachment(doc.UNID, attachName, fieldName)
+    If response.ResponseCode = 200 Then
+        Call parser.loadFromJSON(response.ContentBody)
+        Set jobj = parser.getRootObject
+    End If
+    return jobj
 End Function
 
 ' Often you have to provide a string array of UNIDs to the DRAPI methods.

@@ -1,0 +1,24 @@
+meta {
+  name: deleteDocument
+  type: http
+  seq: 9
+}
+
+delete {
+  url: {{serverUrl}}/document/{{new_unid}}?dataSource={{scope}}&mode=admin
+  body: json
+  auth: inherit
+}
+
+params:query {
+  dataSource: {{scope}}
+  mode: admin
+}
+
+headers {
+  accept: application/json
+}
+
+script:pre-request {
+  bru.setVar("new_unid",bru.getEnvVar("new_unid"));
+}

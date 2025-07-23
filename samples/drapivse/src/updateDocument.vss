@@ -28,31 +28,18 @@ Sub Initialize
 
     Try
         server.serverURL = SERVER_NAME
+        server.JWTToken = TOKEN ' Save a valid token in functions.vss
         Call server.login(USERNAME, USERPASSWORD)
         Set request = server.createRequest("demo")
 
-        ' get the document, load it into a JsonObject, update the Color field, and save it using put()
-        Set doc = request.getDocument(UNID)
-        Call parser.loadFromJSON(doc.JsonValue)
-        Set jsonObj = parser.getRootObject()
-        Call jsonObj.insertValue("Color", "Red")
-        doc.JsonValue = jsonObj.toString(False)
-        Call parser.loadFromJSON(doc.JsonValue)
-        Set jsonObj = parser.getRootObject()
-        Print "Color updated to " &  jsonObj.getChild("Color").scalarValue
-        Print "Doc JSON: " & doc.JsonValue
-
-        ' now use patchDocument() to update the Color field
         rstr = |{"Color": "Blue"}|
-        Set response = request.patchDocument(unid, rstr, "default")
-        Set response = doc.refresh()
+        Set doc = request.patchDocument(unid, rstr, "default")
+
         Call parser.loadFromJSON(doc.JsonValue)
         Set jsonObj = parser.getRootObject()
         Print "Color changed to " &  jsonObj.getChild("Color").scalarValue
         Print "New JSON: " & doc.JsonValue
     Catch
         Print "Error " & Error() & " on line " & Erl()
-    Finally
-        If (Not server is Nothing && server.connected) Then server.logout
     End Try
 End Sub

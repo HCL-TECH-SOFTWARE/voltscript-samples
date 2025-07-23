@@ -22,22 +22,19 @@ Sub Initialize
     Dim request as DrapiRequest, serverInfo as DrapiServerInfo
 
     Try
-        server.serverURL = SERVER_NAME
-        Call server.login(USERNAME, USERPASSWORD)
-        Set request = server.createRequest("demo")
+        Call login(server, USERNAME, USERPASSWORD)
+        Set serverInfo = server.createRequest("").getServerInfo()   ' Scope is optional, we're not accessing anything from a scope
 
-        Set serverInfo = request.getServerInfo()
         If serverInfo.ResponseCode = 200 Then
             Print "Domino Version: " & serverInfo.DominoVersion
             Print "Drapi Version: " & serverInfo.DrapiVersion
         Else
             Print "Error getting server info: " & serverInfo.ResponseCode & " - " & serverInfo.ErrorMessage
         End If
+        Print server.JWTToken
 
     Catch
         Print "Error " & Error() & " on line " & Erl()
-    Finally
-        If (Not server is Nothing && server.connected) Then server.logout
     End Try
 
 End Sub

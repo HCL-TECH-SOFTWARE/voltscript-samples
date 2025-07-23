@@ -4,20 +4,19 @@ Option Public
 Use "../libs/VoltMXObjects"
 Use "../libs/functions"
 UseVSE "*ContextVSE"
-UseVSE "*KeepVSE"
+UseVSE "*DrapiVSE"
 
 Sub Initialize
     Dim ctx as New Context()
     Dim data as String
     Dim docs as JsonObject
-    Dim scope as KeepScope
     Dim responseObj as JsonObject
+    Dim drapiRequest as DrapiRequest
 
     Dim payload as New JsonObject()
-    Dim server as New KeepServer()
+    Dim server as New DrapiServer()
     Dim parser as new JsonParser()
-
-    Dim response as String
+    Dim response as DrapiResponse
 
     Dim username as String 
     Dim password as String 
@@ -36,12 +35,12 @@ Sub Initialize
 
         Call server.login(username, password)
 
-        Set scope = server.getScope("companiesandcontacts")
         Set docs = convertJson()
         Call payload.insertValue("documents", docs)
 
-        response = scope.bulkCreate(payload.toString(false))
-        Call parser.loadFromJson(response)
+        Set drapiRequest = server.createRequest("foundrycontacts")
+        Set response = drapiRequest.bulkCreateDocuments(payload.toString(false))
+        Call parser.loadFromJson(response.contentBody)
         Set responseObj = parser.getRootObject()
 
         VoltMxResult.httpStatusCode = 200

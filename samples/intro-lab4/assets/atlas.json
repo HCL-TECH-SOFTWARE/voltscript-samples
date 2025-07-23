@@ -31,10 +31,10 @@
         }
     ],
     "vseDependencies": {
-        "KeepVSE": {
-            "library": "KeepVSE VoltScript Extension",
-            "version": "1.0.2",
-            "module": "keepvse",
+        "DrapiVSE": {
+            "library": "Drapi VoltScript Extension",
+            "version": "1.0.0",
+            "module": "drapi",
             "repository": "volt-mx-marketplace"
         }
     }

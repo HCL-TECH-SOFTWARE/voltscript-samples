@@ -23,10 +23,17 @@
     "dependencies": [
     ],
     "vseDependencies": {
-        "CouchVSE": {
+        "DrapiVSE": {
             "library": "DrapiVSE VoltScript Extension",
             "version": "1.0.0",
-            "module": "drapivse"   
+            "module": "drapivse",
+            "repository": "volt-mx-marketplace" 
+        },
+        "JsonVSE": {
+            "library": "JsonVSE VoltScript Extension",
+            "version": "1.0.3",
+            "module": "jsonvse",
+            "repository": "volt-mx-marketplace"
         }
     }
 }

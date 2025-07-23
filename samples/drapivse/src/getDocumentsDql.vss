@@ -23,9 +23,11 @@ Sub Initialize
     Dim unids as Variant
     Try
         server.serverURL = SERVER_NAME
-        Call server.login(USERNAME, USERPASSWORD)
+        server.JWTToken = TOKEN ' Save a valid token in functions.vss
+        
         ' DRAPI {{serverUrl}}/query?dataSource={{scope}}&action=execute, see bruno request getDql
         Set robj = performDqlQuery(server, "demo")
+
         Print robj.ChildCount & " documents found."
         If (robj.ChildCount > 0) Then
             unids = getUNIDs(robj.toString(False))
@@ -34,7 +36,5 @@ Sub Initialize
 
     Catch
         Print "Error " & Error() & " on line " & Erl()
-    Finally
-        If (Not server is Nothing && server.connected) Then server.logout
     End Try
 End Sub

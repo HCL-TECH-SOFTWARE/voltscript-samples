@@ -2,7 +2,7 @@ Option Public
 Option Declare
 Use "../libs/VoltMXObjects"
 Use "../libs/VoltScriptJsonConverter"
-UseVSE "*KeepVSE"
+UseVSE "*DrapiVSE"
 
 '**
 ' * Represents a company.
