@@ -1,0 +1,7 @@
+libs/VoltScriptTesting.vss
+libs/VoltScriptCollections.vss
+libs/VoltMXObjects.vss
+libs/VoltScriptJsonConverter.vss
+Libs/VoltScriptLogging.vss
+vses/*
+unit-test-reports/*

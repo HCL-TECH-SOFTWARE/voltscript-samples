@@ -35,7 +35,7 @@
     "vseDependencies": {
         "HashVSE": {
             "library": "HashVSE VoltScript Extension",
-            "version": "1.0.3",
+            "version": "1.0.4",
             "module": "hashvse",
             "repository":"marketplace"
         }
